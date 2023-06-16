@@ -4,7 +4,7 @@
 # FILE NAME: Makefile
 # BRANCH NAME: main
 # 
-# CONTRIBUTORS: Shuaitao WANG, Lauriane VILMIN, AurÈlien BORDET, Masihullah HASANYAR, Thomas ROMARY, Nicolas FLIPO
+# CONTRIBUTORS: Shuaitao WANG, Lauriane VILMIN, AurÔøΩlien BORDET, Masihullah HASANYAR, Thomas ROMARY, Nicolas FLIPO
 #
 # PROJECT MANAGER: Nicolas FLIPO
 # 
@@ -109,27 +109,27 @@ V_MB=0.01
 
 
 # Paths for Include
-INCL_GC=-I$(PATH_INST)/libgc/trunk/src
-INCL_PC=-I$(PATH_INST)/libpc/trunk/src
-INCL_TS=-I$(PATH_INST)/libts/trunk/src
-INCL_LP=-I$(PATH_INST)/libprint/trunk/src
-INCL_IO=-I$(PATH_INST)/libio/trunk/src/
-INCL_CHR=-I$(PATH_INST)/libchronos/trunk/src/
-#INCL_SPA=-I$(PATH_INST)/libspa/trunk/src/
+INCL_GC=-I$(PATH_INST)/libgc/src
+INCL_PC=-I$(PATH_INST)/libpc/src
+INCL_TS=-I$(PATH_INST)/libts/src
+INCL_LP=-I$(PATH_INST)/libprint/src
+INCL_IO=-I$(PATH_INST)/libio/src/
+INCL_CHR=-I$(PATH_INST)/libchronos/src/
+#INCL_SPA=-I$(PATH_INST)/libspa/src/
 INCL_HYD=-I$(PATH_INST)/libhyd/branches/MH/src/
-INCL_TTC=-I$(PATH_INST)/libttc/trunk/src
+INCL_TTC=-I$(PATH_INST)/libttc/src
 INCL_RIVE=-I$(PATH_INST)/c-rive/branches/MH/src
-INCL_SEB=-I$(PATH_INST)/libseb/trunk/src
-INCL_TUB=-I$(PATH_INST)/libtube/trunk/src
-INCL_PROSE=-I$(HOME)/Programmes/prose/trunk/src
-INCL_SPASR=-I$(PATH_INST)/libgc/trunk/src/sparse_11_7_2011
+INCL_SEB=-I$(PATH_INST)/libseb/src
+INCL_TUB=-I$(PATH_INST)/libtube/src
+INCL_PROSE=-I$(HOME)/Programmes/prose/src
+INCL_SPASR=-I$(PATH_INST)/libgc/src/sparse_11_7_2011
 INCL_GSL=-I/usr/$(PREFIX_GSL)/include
-INCL_MB=-I$(PATH_INST)/libmb/trunk/src
+INCL_MB=-I$(PATH_INST)/libmb/src
 # Attention, l'ordre est important!
 
-LIBS= -L$(PATH_INST) $(PATH_INST)/libgc/trunk/src/sparse_11_7_2011/sparse.a $(LIBGSL)  -lrive$(V_RIVE)_$(COMPILO) -lttc$(V_TTC)_$(COMPILO) -lseb$(V_SEB)_$(COMPILO) -lhyd$(V_HYD)_$(COMPILO) -lmb$(V_MB)_$(COMPILO) -ltube$(V_TUB)_$(COMPILO) -lchronos$(V_CHR)_$(COMPILO) -lio$(V_IO)_$(COMPILO)  -lgc$(V_GC)_$(COMPILO) -lts$(V_TS)_$(COMPILO)  -lpc$(V_PC)_$(COMPILO)   -lprint$(V_LP)_$(COMPILO) -lc -lm
+LIBS= -L$(PATH_INST) $(PATH_INST)/libgc/src/sparse_11_7_2011/sparse.a $(LIBGSL)  -lrive$(V_RIVE)_$(COMPILO) -lttc$(V_TTC)_$(COMPILO) -lseb$(V_SEB)_$(COMPILO) -lhyd$(V_HYD)_$(COMPILO) -lmb$(V_MB)_$(COMPILO) -ltube$(V_TUB)_$(COMPILO) -lchronos$(V_CHR)_$(COMPILO) -lio$(V_IO)_$(COMPILO)  -lgc$(V_GC)_$(COMPILO) -lts$(V_TS)_$(COMPILO)  -lpc$(V_PC)_$(COMPILO)   -lprint$(V_LP)_$(COMPILO) -lc -lm
 
-#LIBS= -L$(PATH_INST) $(PATH_INST)/libgc/trunk/src/sparse_11_7_2011/sparse.a  -lrive$(V_RIVE)_$(COMPILO) -lttc$(V_TTC)_$(COMPILO) -lhyd$(V_HYD)_$(COMPILO) -lchronos$(V_CHR)_$(COMPILO) -lio$(V_IO)_$(COMPILO)  -lgc$(V_GC)_$(COMPILO) -lts$(V_TS)_$(COMPILO)  -lpc$(V_PC)_$(COMPILO)   -lprint$(V_LP)_$(COMPILO) -lc -lm
+#LIBS= -L$(PATH_INST) $(PATH_INST)/libgc/src/sparse_11_7_2011/sparse.a  -lrive$(V_RIVE)_$(COMPILO) -lttc$(V_TTC)_$(COMPILO) -lhyd$(V_HYD)_$(COMPILO) -lchronos$(V_CHR)_$(COMPILO) -lio$(V_IO)_$(COMPILO)  -lgc$(V_GC)_$(COMPILO) -lts$(V_TS)_$(COMPILO)  -lpc$(V_PC)_$(COMPILO)   -lprint$(V_LP)_$(COMPILO) -lc -lm
 
 OPTCOMP = -g
 #OPTW= -Wall
@@ -156,7 +156,7 @@ CPPFLAGS=  $(INCL_GC) $(INCL_LP) $(INCL_TS) $(INCL_PC) $(INCL_IO) $(INCL_CHR) $(
 #CPPFLAGS=  $(INCL_GC) $(INCL_LP) $(INCL_TS) $(INCL_PC) $(INCL_IO) $(INCL_CHR) $(INCL_HYD) $(INCL_TTC) $(INCL_RIVE) $(INCL_SPASR) $(INCL_PROSE)
 
 
-# Variables dÅÈduites des prÅÈcÅÈdentes:
+# Variables dÔøΩÔøΩduites des prÔøΩÔøΩcÔøΩÔøΩdentes:
 OBJ1=$(SOURCES.y:.y=.o) $(SOURCES.l:.l=.o)
 OBJ2=$(SOURCES.c:.c=.o)
 MAIN=$(MAIN.c:.c=.o)
@@ -207,7 +207,7 @@ llibpub :   $(OBJ_LIB) chkopts
 	ar rv libHyCu$(VERSION).a $(OBJ_LIB) 
 	rm *.c *.o *.y *.l *.h Makefile
 
-# Pas sÅ˚r que ÅÁa marche toujours pour Flumy depuis qu'il n'y a plus PetsC
+# Pas sÔøΩÔøΩr que ÔøΩÔøΩa marche toujours pour Flumy depuis qu'il n'y a plus PetsC
 
 flutest :   $(OBJFLU)  
 	$(CC) $(CFLAGS) $(CPPFLAGS)  -o $(PROGRAMME)-test  $(OBJFLU)  $(LIBS)
@@ -216,7 +216,7 @@ flutest :   $(OBJFLU)
 test : flutest
 	./$(PROGRAMME)-test
 
-# Suppression du $(RM) par dÅÈfaut :
+# Suppression du $(RM) par dÔøΩÔøΩfaut :
 .y.c :
 	$(YACC.y) $< -o $*.c
 #.y.o :
