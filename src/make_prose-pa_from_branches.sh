@@ -62,10 +62,10 @@ PATH_INST="$LIB_HYDROSYSTEM_PATH"
 
 
 if [ $# -eq 0 ] ; then
-    ./make_pprose.sh
+    ./make_pprose-pa.sh
     exit
 elif [ $# -eq 1 ] ; then
-    ./make_pprose.sh $1
+    ./make_pprose-pa.sh $1
     exit
 else
     if [ $1 != "-b" ] ; then
@@ -77,6 +77,13 @@ else
     fi
     BNAME="$2"
 fi
+
+TMP=$PATH_INST
+echo "PATH_INST before check" $TMP
+if [ \( $TMP == "./" \) -o \( $TMP == "." \) ] ; then
+    PATH_INST=`pwd`
+fi
+echo "PATH_INST after check" $PATH_INST
 
 if [ ! -d "$PATH_INST" ] ; then 
     mkdir -p $PATH_INST
@@ -94,9 +101,9 @@ cd $PATH_INST
 if [ -d "$PATH_INST/scripts" ] ; then
     rm -rf scripts
 fi
-svn checkout http://svn.geosciences.fontainebleau.ensmp.fr/repos/scripts
+git clone https://gitlab.com/gutil/scripts.git
 
-DIR_SHELLS="$PATH_INST/scripts/trunk/install_lib/"
+DIR_SHELLS="$PATH_INST/scripts/"
 cd $DIR_SHELLS/
 chmod 755 *
 echo "./create_links.sh" $PATH_INST
