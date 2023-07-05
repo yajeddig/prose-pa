@@ -15,7 +15,7 @@
     <br />    <br />
     <strong>Contributors</strong>
     <br />
-     Shuaitao WANG, Lauriane VILMIN, Aur�lien BORDET, Masihullah HASANYAR, Thomas ROMARY, Nicolas FLIPO
+     Shuaitao WANG, Lauriane VILMIN, Aurélien BORDET, Masihullah HASANYAR, Thomas ROMARY, Nicolas FLIPO
     <br />
     <br />
     <strong>Project manager</strong>
