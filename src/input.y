@@ -4422,6 +4422,115 @@ att_mb : LEX_TIME LEX_EQUAL mesure
   LP_printf(Simul->poutputs,"t %s = %f s\n",name_extremum($1),mb2->t[$1]);
   //printf("t %s = %f s\n",name_extremum($1),mb2->t[$1]);
 }
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY LEX_DATE_HH_MM_SS
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+  
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    sscanf($4,"%d:%d:%d", &pd_tmp->hh, &pd_tmp->min,&pd_tmp->ss);
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb2->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),pout_hyd->pout->t_out[$1]); 
+  
+  free(pd_tmp);
+  pd_tmp = NULL;
+}
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY LEX_DATE_HH_MM
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    sscanf($4,"%d:%d", &pd_tmp->hh, &pd_tmp->min);
+    pd_tmp->ss = 0.;
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb2->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  //LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),Simul->chronos->t[$1]); 
+
+  free(pd_tmp);
+  pd_tmp = NULL;
+}
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY LEX_INT
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    pd_tmp->hh = $4;
+    pd_tmp->min = 0.;
+    pd_tmp->ss = 0.;
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb2->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  //LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),Simul->chronos->t[$1]);
+  free(pd_tmp);
+  pd_tmp = NULL;
+
+}
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    pd_tmp->hh = 0.;
+    pd_tmp->min = 0.;
+    pd_tmp->ss = 0.;
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb2->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  //LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),Simul->chronos->t[$1]);
+  free(pd_tmp);
+  pd_tmp = NULL;
+ 
+}
 | LEX_TUNIT LEX_EQUAL a_unit
 {
   mb2->time_unit = $3;
@@ -4556,6 +4665,14 @@ def_out_mb_heat : intro_mb_heat_out atts_heat_out LEX_CLOSING_BRACE
 {
    
    mb_heat_temp->t0 = mb_heat_temp->t[BEGINNING] + mb_heat_temp->ndt;
+
+   /*** SW 16/06/2023 check if we define t_ini and t_end. if not, set as the ones of simulation. ***/
+   if((mb_heat_temp->t[BEGINNING] < EPS_TS) && fabs(mb_heat_temp->t[END] < EPS_TS)) // check if they are both 0
+   {
+       mb_heat_temp->t[BEGINNING] = Simul->chronos->t[BEGINNING];
+       mb_heat_temp->t[END] = Simul->chronos->t[END];
+   }
+
    $$ = mb_heat_temp;
    mb_heat_temp = NULL;   
 }
@@ -4578,6 +4695,115 @@ att_heat_out : LEX_TIME LEX_EQUAL mesure
 {
   mb_heat_temp->t[$1] = $3;
   LP_printf(Simul->poutputs, "t mab_heat = %f\n", $3); 
+}
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY LEX_DATE_HH_MM_SS
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+  
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    sscanf($4,"%d:%d:%d", &pd_tmp->hh, &pd_tmp->min,&pd_tmp->ss);
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb_heat_temp->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),pout_hyd->pout->t_out[$1]); 
+  
+  free(pd_tmp);
+  pd_tmp = NULL;
+}
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY LEX_DATE_HH_MM
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    sscanf($4,"%d:%d", &pd_tmp->hh, &pd_tmp->min);
+    pd_tmp->ss = 0.;
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb_heat_temp->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  //LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),Simul->chronos->t[$1]); 
+
+  free(pd_tmp);
+  pd_tmp = NULL;
+}
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY LEX_INT
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    pd_tmp->hh = $4;
+    pd_tmp->min = 0.;
+    pd_tmp->ss = 0.;
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb_heat_temp->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  //LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),Simul->chronos->t[$1]);
+  free(pd_tmp);
+  pd_tmp = NULL;
+
+}
+| LEX_TIME LEX_EQUAL LEX_DATE_DAY
+{
+  s_date_ts *pd_tmp;
+  pd_tmp = new_date_ts();
+
+  switch(Simul->date_format){
+  case FR_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->dd, &pd_tmp->mm,&pd_tmp->yyyy);
+    break;
+  case US_TS:
+    sscanf($3,"%d/%d/%d", &pd_tmp->mm, &pd_tmp->dd,&pd_tmp->yyyy);
+    
+    break;
+  default: LP_error(Simul->poutputs,"In %s%4.2f -> Encoded date unknown, impossible to read the line %d in %s. Use US_TS or FR_TS\n",CODE_NAME,NVERSION_PROSE,line_nb+1,current_read_files[pile].name);
+    break;
+   }
+    pd_tmp->hh = 0.;
+    pd_tmp->min = 0.;
+    pd_tmp->ss = 0.;
+    
+    //pd_tmp->mm -= 1; // the list of months in pd (s_date_ts) startes at 0 and not 1, it is done in TS_date2julian_dd_hm
+
+  mb_heat_temp->t[$1] = TS_date2julian_dd_hm(pd_tmp,Simul->chronos->yr0,Simul->poutputs) * NSEC_DAY_TS;
+  //LP_printf(Simul->poutputs,"t %s = %f s\n",HYD_name_extremum($1),Simul->chronos->t[$1]);
+  free(pd_tmp);
+  pd_tmp = NULL;
+ 
 }
 | LEX_TUNIT LEX_EQUAL a_unit
 {

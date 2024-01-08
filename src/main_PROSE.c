@@ -346,7 +346,7 @@ int main(int argc, char **argv)
 	  H_flux_ttc = (double *)malloc(nele*sizeof(double));
 	  for (i=0; i<nele; i++)
 	    {
-	      p_rside[0]->val[VTS] = VIEWTOWHISKY; /*** !!! To be filled in through the input.y !!! --> parameter of vegetal cover ***/
+	      p_rside[0]->val[VTS] = 1.0 ; //VIEWTOWHISKY; /*** !!! To be filled in through the input.y !!! --> parameter of vegetal cover ***/
 	      p_surf_heat_flux[i]->pH_inputs->r_side = p_rside[0]->val;
 	      p_surf_heat_flux[i]->pH_inputs->Tw = Simul->pcarac_heat_ttc->p_species[0]->plink->pvar_ttc->var[i];
 	    }

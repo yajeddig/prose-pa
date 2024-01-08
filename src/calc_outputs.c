@@ -1202,7 +1202,7 @@ void  PROSE_print_average_result_bio(s_element_hyd *pele, s_simul **psimul_bio, 
   n = HYD_find_river(river,TRANSV_PROFILE,pchyd,Simul->poutputs);
   // SW 11/02/2022 bug for Marne river
   //ndown_limits = pchyd->counter->ndownstr_limits; 
-  if((fabs(pk - pchyd->upstr_reach[n]->limits[UPSTREAM]->pk) > EPS_TS) && (fabs(pk - pchyd->downstr_reach[n]->limits[DOWNSTREAM]->pk) > EPS_TS)) // pk is not the upstream and downstream pk
+  if((fabs(pk - pchyd->upstr_reach[n]->limits[UPSTREAM]->pk) > EPS_TS) && (fabs(pk - pchyd->downstr_reach[0]->limits[DOWNSTREAM]->pk) > EPS_TS)) // pk is not the upstream and downstream pk
   {
 
       if(pk > pele->center->pk)
@@ -1254,7 +1254,7 @@ void  PROSE_print_average_result_bio(s_element_hyd *pele, s_simul **psimul_bio, 
      id_abs_n = id_abs;
      dx_bio = 0.;
   }
-  if(fabs(pk - pchyd->downstr_reach[n]->limits[DOWNSTREAM]->pk) < EPS_TS) // pk is the downstream pk
+  if(fabs(pk - pchyd->downstr_reach[0]->limits[DOWNSTREAM]->pk) < EPS_TS) // pk is the downstream pk
   {
      id_abs_n = id_abs;
      dx_bio = 0.;

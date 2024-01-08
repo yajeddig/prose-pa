@@ -421,6 +421,11 @@ alnum [0-9A-Za-z]
 [Mm][Oo][Rr][Tt] {yylval.integer = MORT20; return LEX_MORT;}
 [Pp][Hh][Ii]"_"[Ll][Ii][Mm]"_"[Mm][Oo][Rr][Tt] {yylval.integer = PHI_LIM_MORT; return LEX_MORT;}
 [Dd][Ee][Ll][Tt][Aa] {yylval.integer = DELTA; return LEX_MORT;}
+[Kk][Dd] {yylval.integer = KD; return LEX_MORT;}
+[Kk][Pp] {yylval.integer = KP; return LEX_MORT;}
+[Aa][Ll][Pp][Hh][Aa]"_"[Bb][Ii][Ff] {yylval.integer = ABIF; return LEX_MORT;}
+[Mm]"_"[Bb][Ii][Ff] {yylval.integer = MBIF; return LEX_MORT;}
+[Cc]"_"[Rr][Ee][Ff] {yylval.integer = CREF; return LEX_MORT;}
 
 [Gg][Rr][Aa][Zz] {yylval.integer = GRAZ20; return LEX_GRAZ;}
 

@@ -123,7 +123,6 @@ INCL_SEB=-I$(PATH_INST)/libseb/src
 INCL_TUB=-I$(PATH_INST)/libtube/src
 INCL_PROSE=-I$(HOME)/Programmes/prose/src
 INCL_SPASR=-I$(PATH_INST)/libgc/src/sparse_11_7_2011
-INCL_GSL=-I/usr/$(PREFIX_GSL)/include
 INCL_MB=-I$(PATH_INST)/libmb/src
 # Attention, l'ordre est important!
 
