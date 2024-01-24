@@ -50,10 +50,10 @@ PROGRAMME = $(NAME)$(VERSION)
 PATH_INST=${LIB_HYDROSYSTEM_PATH}
 
 
-NAME = prose-pa
+NAME = prose-p
 SHELL = /bin/bash
 
-VERSION=0.76
+VERSION=0.77
 
 SOURCES.c = manage_simulation.c manage_link_prose.c manage_print.c solve_prose.c manage_bio_prose.c\
               calc_outputs.c calc_base_assimilation.c manage_assimilation.c itos.c reoxygenation.c\
@@ -97,14 +97,14 @@ V_PC=0.05
 V_LP=1.24
 V_TS=1.74
 V_GC=0.10
-V_IO=0.12
+V_IO=0.16
 V_CHR=0.13
 #V_SPA=0.02
 V_HYD=0.34
-V_TTC=0.09
-V_RIVE=0.27
-V_SEB=0.06
-V_TUB=0.06
+V_TTC=0.13
+V_RIVE=0.34
+V_SEB=0.09
+V_TUB=0.08
 V_MB=0.01
 
 
@@ -140,8 +140,8 @@ OPTW= -Wno-write-strings
 # This option indicates the version of GCC to the pre-compiler to properly compile the lexical.l
 CFLAGSD = -DGCC$(GCC_VER) #Mettre en commentaire pour certaine version de lex
 OPTOMP= -fopenmp
-#OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE
-OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE -DCDA
+OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE
+#OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE -DCDA
 CFLAGS_GLOBAUX= $(OPTCOMP) $(OPTW) 
 CFLAGS= $(CFLAGS_GLOBAUX) $(OPTD)  $(CFLAGSD) 
 

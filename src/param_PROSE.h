@@ -62,7 +62,7 @@ enum trophic_state {HORS_BLOOM, BLOOM, NTROPHIC_STATE};
 enum param_up_down {PARAM_UP, PARAM_DOWN, PARAMR};
 enum type_formule_rea {HOLLER,AVERY};
 #define PARAM_PHY MU_BACT_DA
-#define NVERSION_PROSE 0.76
+#define NVERSION_PROSE 0.77
 
 #define CODE_NAME "ProSe-PA"
 

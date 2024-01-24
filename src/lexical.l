@@ -345,6 +345,8 @@ alnum [0-9A-Za-z]
 [Oo][Mm]"_"[Dd][Ee][Cc][Aa][Yy]"_"[Rr][Aa][Tt][Ee] return LEX_OM_DECAY_RATE;
 
 
+[Ss][Ee][Dd][Vv][Oo][Ll] {yylval.integer = SED_VOL_IO; return LEX_SED_VAR;}
+[Ss][Ee][Dd][Hh] {yylval.integer = SED_H_IO; return LEX_SED_VAR;}
 
 [Tt][Ww] {yylval.integer = TW_IO; return LEX_TEMPSPECIES;}
 [Tt][Aa] {yylval.integer = TA_IO; return LEX_TEMPSPECIES;}

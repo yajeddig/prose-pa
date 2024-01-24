@@ -322,7 +322,7 @@
 %token LEX_PARAM_RANGE LEX_ERROR_OBS LEX_S_PERCENT LEX_LIMIT_FACTOR LEX_RANDOM_WALK LEX_DA_METHOD
 %token <integer> LEX_PHY2  LEX_LIMIT_FACTOR_VAL LEX_RANDOM_WALK_VAL LEX_DA_METHOD_VAL
 %token LEX_SPECIES LEX_ANNEXVAR LEX_ADS_SPECIES LEX_EXCH
-%token <integer> LEX_ONESPECIES LEX_TEMPSPECIES LEX_COMP LEX_ONEANNEXVAR LEX_PARAM_DA 
+%token <integer> LEX_ONESPECIES LEX_TEMPSPECIES LEX_COMP LEX_ONEANNEXVAR LEX_PARAM_DA LEX_SED_VAR
 %token <integer> LEX_PROCESS
 %token <integer> LEX_PARAMP LEX_PARAML LEX_PARAMM LEX_PARAMG LEX_PARAMD
 %token <integer> LEX_PHOT LEX_GROWTH LEX_MORT LEX_RESP LEX_GRAZ LEX_EXCR 
@@ -3753,6 +3753,12 @@ intro_output : LEX_OUTPUT_TYPE LEX_EQUAL brace
     pout_hyd->pout->tempvar[i] = NO_TS;//NF 11/10/2020 watch this is from c-rive where YES and NO are inversed compared to libts, meaning NO_TS = YES and NO_TS = YES
     pout_hyd->pout->tempvar_unit[i] = 1.;	  
   }
+  for(i = 0; i < NSEDVAR_IO; i++) // SW 23/01/2024
+  {
+    pout_hyd->pout->biosedvar[i] = NO_TS;//SW 23/01/2024 watch this is from c-rive where YES and NO are inversed compared to libts, meaning NO_TS = YES and NO_TS = YES
+    pout_hyd->pout->biosedvar_unit[i] = 1.;	  
+  }
+
   output_type = $1;
 }
 ;
@@ -3968,6 +3974,8 @@ var_list : one_var var_list
 | one_var_bio
 | one_var_temp var_list //NF 12/10/2020
 | one_var_temp //NF 12/10/2020
+| one_var_sediment var_list // SW 23/01/2024
+| one_var_sediment // SW 23/01/2024
 ;
 
 one_var : LEX_ONE_VAR a_unit
@@ -3981,6 +3989,14 @@ one_var_bio : LEX_ONESPECIES a_unit
 {
   pout_hyd->pout->biovar[$1] = YES_TS;
   pout_hyd->pout->biovar_unit[$1] = $2;
+}
+;
+
+//SW 23/01/2024
+one_var_sediment : LEX_SED_VAR a_unit
+{
+  pout_hyd->pout->biosedvar[$1] = YES_TS;
+  pout_hyd->pout->biosedvar_unit[$1] = $2;
 }
 ;
 
