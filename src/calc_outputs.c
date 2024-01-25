@@ -1325,7 +1325,7 @@ if((psimul_bio[id_abs]->section->compartments[layer] != NULL) && (psimul_bio[id_
               switch(e) 
              {
                   case SED_VOL_IO : {
-                     val_e = psimul_bio[id_abs]->section->compartments[VASE][0]->state->volume;
+                     val_e = psimul_bio[id_abs]->section->compartments[VASE][0]->state->volume / pele->length; // vol in m^3/m
                      break;
                   }
                   case SED_H_IO : {
