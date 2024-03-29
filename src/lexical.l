@@ -108,6 +108,7 @@ alnum [0-9A-Za-z]
 
 %%
 #[^\n]*\n 	{ line_nb++;}	/* To not read the comments */
+![^\n]*\n 	{ line_nb++;}	/* To not read the comments */
 \n	{ line_nb++;}
 [ \t]+ ;			/* To ignore spaces and tabulations */
 
