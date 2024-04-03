@@ -129,7 +129,7 @@ int Prose_calc_normalized_weights_and_sample_size(s_carac_assim *passim, FILE *f
    for(i = 0; i < passim->N_particules; i++)
       sum += passim->omega[i];
 
-   LP_printf(Simul->poutputs, "sum = %.15f \n ", sum);
+   //LP_printf(Simul->poutputs, "sum = %.15f \n ", sum);
    
    if(fabs(sum) < EPS_TS)
   {

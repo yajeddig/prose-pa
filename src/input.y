@@ -3724,7 +3724,7 @@ def_output : intro_output output_options brace
 
   else Simul->outputs[output_type][0] = pout_hyd;
 
-  if(Simul->calc_mode[DA] == YES_TS)
+  if(Simul->calc_mode[DA] == YES_TS && pts_obs_pktot != NULL)
       Prose_create_obs_points(Simul->passim, pts_obs_pktot);
   plp_pktot = NULL;
   pmb_pktot = NULL;
