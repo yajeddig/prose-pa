@@ -517,6 +517,7 @@ int main(int argc, char **argv)
 
   
     Simul->clock->time_spent[OUTPUTS_CHR] += CHR_end_timer();//LV 3/09/2012
+    t_da = t + Simul->chronos->dt * Simul->passim->nstep; // SW 04/04/2024
     //if(Simul->calc_mode[TTC] == YES_TS)
     //fpno3 = fopen("C_no3_simul_hyd_ttc.txt","w"); // SW test
     
@@ -525,7 +526,6 @@ int main(int argc, char **argv)
       LP_printf(Simul->poutputs,"t = %f days\n",t/3600/24);
       
       //t += dt; // SW 23/05/2018 elle est deja dans HYD_transient_hydraulics
-      t_da += Simul->chronos->dt * Simul->passim->nstep;
       HYD_transient_hydraulics(&t,dt,pmb,pmb2,Simul->pinout->fmb,Simul->pchyd,Simul->clock,Simul->chronos,Simul->outputs,Simul->pinout,Simul->poutputs);//hydrau_moy(&t,&k,dt_calc) in ProSe 
       //CHR_refresh_t(Simul->chronos); /* SW 06/01/2021 update current time */ // SW 29/01/2021 bug, since we update t[BEGINNING_CHR] also which is used for initialization of mat4 and mat5
       Simul->chronos->t[CUR_CHR] += Simul->chronos->dt;
@@ -750,7 +750,10 @@ int main(int argc, char **argv)
         {
 	  // extraction des simuls
 	  if(fabs(t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
+	  {
 	      answer_obs = Prose_calc_difference_obs_simul(Simul->passim, Simul->psimul_bio, nparticules, t, Simul->poutputs);
+	      t_da += Simul->chronos->dt * Simul->passim->nstep;
+	  }
 	  // check if we have observations at time t
 	  
 	  if(answer_obs == YES_TS)
