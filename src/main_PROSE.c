@@ -95,7 +95,7 @@ int main(int argc, char **argv)
   /* Error report */
   int timi;
   /* Current time in simulation */
-  double t,dt,t_abs,dt_day;
+  double t,dt,t_abs,dt_day,t_da;
   /* Time of end of the simulation in s */
   double tend;
   double *tempe;
@@ -525,6 +525,7 @@ int main(int argc, char **argv)
       LP_printf(Simul->poutputs,"t = %f days\n",t/3600/24);
       
       //t += dt; // SW 23/05/2018 elle est deja dans HYD_transient_hydraulics
+      t_da += Simul->chronos->dt * Simul->passim->nstep;
       HYD_transient_hydraulics(&t,dt,pmb,pmb2,Simul->pinout->fmb,Simul->pchyd,Simul->clock,Simul->chronos,Simul->outputs,Simul->pinout,Simul->poutputs);//hydrau_moy(&t,&k,dt_calc) in ProSe 
       //CHR_refresh_t(Simul->chronos); /* SW 06/01/2021 update current time */ // SW 29/01/2021 bug, since we update t[BEGINNING_CHR] also which is used for initialization of mat4 and mat5
       Simul->chronos->t[CUR_CHR] += Simul->chronos->dt;
@@ -748,7 +749,8 @@ int main(int argc, char **argv)
         if(Simul->passim->method == PF_PROSE)
         {
 	  // extraction des simuls
-	  answer_obs = Prose_calc_difference_obs_simul(Simul->passim, Simul->psimul_bio, nparticules, t, Simul->poutputs);
+	  if(fabs(t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
+	      answer_obs = Prose_calc_difference_obs_simul(Simul->passim, Simul->psimul_bio, nparticules, t, Simul->poutputs);
 	  // check if we have observations at time t
 	  
 	  if(answer_obs == YES_TS)
@@ -877,7 +879,7 @@ int main(int argc, char **argv)
 	}
 	else // SW 16/11/2021
     {
-        Prose_processus_enkf(Simul->psimul_bio, nele, Simul->passim, nparticules, t, Simul->poutputs);
+      Prose_processus_enkf(Simul->psimul_bio, nele, Simul->passim, nparticules, t, t_da, Simul->poutputs);
         //LP_printf(Simul->poutputs, "enkf t = %f\n", t);
     }
     }

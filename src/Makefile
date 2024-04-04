@@ -53,7 +53,7 @@ PATH_INST=${LIB_HYDROSYSTEM_PATH}
 NAME = prose-p
 SHELL = /bin/bash
 
-VERSION=0.77
+VERSION=0.78
 
 SOURCES.c = manage_simulation.c manage_link_prose.c manage_print.c solve_prose.c manage_bio_prose.c\
               calc_outputs.c calc_base_assimilation.c manage_assimilation.c itos.c reoxygenation.c\

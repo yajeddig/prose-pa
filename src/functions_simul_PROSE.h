@@ -257,7 +257,7 @@ s_matrix_la *Prose_calc_predict_matrix_subtract_mean_enkf(s_carac_assim *, s_sim
 s_matrix_la *Prose_calc_cross_cov_enkf(s_matrix_la *, s_carac_assim *, s_simul ***, int, FILE *);
 s_matrix_la *Prose_calc_gain_enkf(s_carac_assim *, s_simul ***, int , FILE *);
 void Prose_update_parameter_enkf(s_matrix_la *, s_carac_assim *, s_simul ***, int, FILE *);
-void Prose_processus_enkf(s_simul ***, int , s_carac_assim *, int, double , FILE *);
+void Prose_processus_enkf(s_simul ***, int , s_carac_assim *, int, double ,double,  FILE *);
 s_matrix_la *Prose_cacl_cov_matrix_unknown_true(s_matrix_la *, s_matrix_la *, int , FILE *);
 s_matrix_la *Prose_calc_predict_matrix_subtract_obs_enkf(s_carac_assim *, s_simul ***, int , FILE *);
 s_matrix_la *Prose_calc_obs_error_cov_matrix_direct_enkf(s_carac_assim *, FILE *);
