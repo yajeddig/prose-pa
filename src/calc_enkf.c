@@ -573,6 +573,7 @@ void Prose_processus_enkf(s_simul ***psimul_bio, int nele, s_carac_assim *passim
     s_matrix_la *gain_kalman;
 
     //CHR_begin_timer();
+    answer_obs = NO_TS;
     // caclculate difference obs simul
     if(fabs(t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
     {

@@ -746,6 +746,7 @@ int main(int argc, char **argv)
 	{
           //Particle filter SW 16/11/2021 to use a function
          //LP_printf(Simul->poutputs, "enkf md = %d\n",Simul->passim->method);
+	  answer_obs = NO_TS;
         if(Simul->passim->method == PF_PROSE)
         {
 	  // extraction des simuls
