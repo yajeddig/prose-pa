@@ -95,7 +95,7 @@ int main(int argc, char **argv)
   /* Error report */
   int timi;
   /* Current time in simulation */
-  double t,dt,t_abs,dt_day,t_da;
+  double t,dt,t_abs,dt_day;
   /* Time of end of the simulation in s */
   double tend;
   double *tempe;
@@ -517,7 +517,7 @@ int main(int argc, char **argv)
 
   
     Simul->clock->time_spent[OUTPUTS_CHR] += CHR_end_timer();//LV 3/09/2012
-    t_da = t + Simul->chronos->dt * Simul->passim->nstep; // SW 04/04/2024
+    Simul->passim->t_da = t + Simul->chronos->dt * Simul->passim->nstep; // SW 04/04/2024
     //if(Simul->calc_mode[TTC] == YES_TS)
     //fpno3 = fopen("C_no3_simul_hyd_ttc.txt","w"); // SW test
     
@@ -750,10 +750,10 @@ int main(int argc, char **argv)
         if(Simul->passim->method == PF_PROSE)
         {
 	  // extraction des simuls
-	  if(fabs(t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
+	  if(fabs(Simul->passim->t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
 	  {
 	      answer_obs = Prose_calc_difference_obs_simul(Simul->passim, Simul->psimul_bio, nparticules, t, Simul->poutputs);
-	      t_da += Simul->chronos->dt * Simul->passim->nstep;
+	      Simul->passim->t_da += Simul->chronos->dt * Simul->passim->nstep;
 	  }
 	  // check if we have observations at time t
 	  
@@ -883,7 +883,7 @@ int main(int argc, char **argv)
 	}
 	else // SW 16/11/2021
     {
-      Prose_processus_enkf(Simul->psimul_bio, nele, Simul->passim, nparticules, t, t_da, Simul->poutputs);
+      Prose_processus_enkf(Simul->psimul_bio, nele, Simul->passim, nparticules, t, Simul->poutputs);
         //LP_printf(Simul->poutputs, "enkf t = %f\n", t);
     }
     }

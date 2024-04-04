@@ -176,6 +176,7 @@ struct carac_assimilation {
 	int num_t_obs;
 	int state;
 	int nstep;
+        double t_da;
 	double alpha;
 	double seuil_chla;
         int random_walk;

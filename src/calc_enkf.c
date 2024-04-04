@@ -567,7 +567,7 @@ void Prose_perturbation_and_assign_param_enkf(s_simul ***psimul_bio, int nele, s
     }  
 }
 
-void Prose_processus_enkf(s_simul ***psimul_bio, int nele, s_carac_assim *passim, int nparticules, double t,double t_da, FILE *fp)
+void Prose_processus_enkf(s_simul ***psimul_bio, int nele, s_carac_assim *passim, int nparticules, double t, FILE *fp)
 {
     int answer_obs, nparam, np;
     s_matrix_la *gain_kalman;
@@ -575,10 +575,10 @@ void Prose_processus_enkf(s_simul ***psimul_bio, int nele, s_carac_assim *passim
     //CHR_begin_timer();
     answer_obs = NO_TS;
     // caclculate difference obs simul
-    if(fabs(t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
+    if(fabs(Simul->passim->t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
     {
         answer_obs = Prose_calc_difference_obs_simul(passim, psimul_bio, nparticules, t, Simul->poutputs);
-        t_da += Simul->chronos->dt * Simul->passim->nstep;
+        Simul->passim->t_da += Simul->chronos->dt * Simul->passim->nstep;
     }
     
     if(answer_obs == YES_TS)

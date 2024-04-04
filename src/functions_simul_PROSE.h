@@ -167,7 +167,8 @@ void PROSE_long_profile(s_simul **, double , s_output_hyd *, int , s_inout_set_i
 void PROSE_create_output_extents_bio(int ,s_lp_pk_hyd *);
 void PROSE_print_final_temp(s_output_hyd ***,s_inout_set_io *,s_chyd *,FILE *);
 void PROSE_update_outputs_hyd_bio_heat_cur_io(double ,s_output_hyd ***,s_inout_set_io *,s_chyd *,s_chronos_CHR *, int , FILE *);
-void PROSE_print_tube_mesh_hyd(double t, s_output_tube_type  *, s_chyd *, s_def_tub ****, FILE *);
+void PROSE_print_tube_mesh_hyd(double , s_output_tube_type  *, s_chyd *, s_def_tub ****, FILE *);
+void PROSE_print_sediment_variables(FILE *,s_output_hyd *);
 
 
 
@@ -257,7 +258,7 @@ s_matrix_la *Prose_calc_predict_matrix_subtract_mean_enkf(s_carac_assim *, s_sim
 s_matrix_la *Prose_calc_cross_cov_enkf(s_matrix_la *, s_carac_assim *, s_simul ***, int, FILE *);
 s_matrix_la *Prose_calc_gain_enkf(s_carac_assim *, s_simul ***, int , FILE *);
 void Prose_update_parameter_enkf(s_matrix_la *, s_carac_assim *, s_simul ***, int, FILE *);
-void Prose_processus_enkf(s_simul ***, int , s_carac_assim *, int, double ,double,  FILE *);
+void Prose_processus_enkf(s_simul ***, int , s_carac_assim *, int, double ,  FILE *);
 s_matrix_la *Prose_cacl_cov_matrix_unknown_true(s_matrix_la *, s_matrix_la *, int , FILE *);
 s_matrix_la *Prose_calc_predict_matrix_subtract_obs_enkf(s_carac_assim *, s_simul ***, int , FILE *);
 s_matrix_la *Prose_calc_obs_error_cov_matrix_direct_enkf(s_carac_assim *, FILE *);
