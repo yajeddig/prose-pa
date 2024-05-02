@@ -125,6 +125,7 @@ s_simul_PROSE *PROSE_init_simulation()
   psimul->passim->seuil_chla = 0.;
   psimul->passim->random_walk = LOOP;
   psimul->passim->method = PF_PROSE;
+  psimul->passim->nstep = 1; // SW 04/04/2024
   
   // SW 24/01/2022
   for(nparam = 0; nparam < NPARAMDA; nparam++)

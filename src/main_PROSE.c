@@ -346,7 +346,7 @@ int main(int argc, char **argv)
 	  H_flux_ttc = (double *)malloc(nele*sizeof(double));
 	  for (i=0; i<nele; i++)
 	    {
-	      p_rside[0]->val[VTS] = VIEWTOWHISKY; /*** !!! To be filled in through the input.y !!! --> parameter of vegetal cover ***/
+	      p_rside[0]->val[VTS] = 1.0 ; //VIEWTOWHISKY; /*** !!! To be filled in through the input.y !!! --> parameter of vegetal cover ***/
 	      p_surf_heat_flux[i]->pH_inputs->r_side = p_rside[0]->val;
 	      p_surf_heat_flux[i]->pH_inputs->Tw = Simul->pcarac_heat_ttc->p_species[0]->plink->pvar_ttc->var[i];
 	    }
@@ -517,6 +517,7 @@ int main(int argc, char **argv)
 
   
     Simul->clock->time_spent[OUTPUTS_CHR] += CHR_end_timer();//LV 3/09/2012
+    Simul->passim->t_da = t + Simul->chronos->dt * Simul->passim->nstep; // SW 04/04/2024
     //if(Simul->calc_mode[TTC] == YES_TS)
     //fpno3 = fopen("C_no3_simul_hyd_ttc.txt","w"); // SW test
     
@@ -745,10 +746,15 @@ int main(int argc, char **argv)
 	{
           //Particle filter SW 16/11/2021 to use a function
          //LP_printf(Simul->poutputs, "enkf md = %d\n",Simul->passim->method);
+	  answer_obs = NO_TS;
         if(Simul->passim->method == PF_PROSE)
         {
 	  // extraction des simuls
-	  answer_obs = Prose_calc_difference_obs_simul(Simul->passim, Simul->psimul_bio, nparticules, t, Simul->poutputs);
+	  if(fabs(Simul->passim->t_da - t) < EPS_TS) // SW 04/04/2024 data assimilation time step
+	  {
+	      answer_obs = Prose_calc_difference_obs_simul(Simul->passim, Simul->psimul_bio, nparticules, t, Simul->poutputs);
+	      Simul->passim->t_da += Simul->chronos->dt * Simul->passim->nstep;
+	  }
 	  // check if we have observations at time t
 	  
 	  if(answer_obs == YES_TS)
@@ -877,7 +883,7 @@ int main(int argc, char **argv)
 	}
 	else // SW 16/11/2021
     {
-        Prose_processus_enkf(Simul->psimul_bio, nele, Simul->passim, nparticules, t, Simul->poutputs);
+      Prose_processus_enkf(Simul->psimul_bio, nele, Simul->passim, nparticules, t, Simul->poutputs);
         //LP_printf(Simul->poutputs, "enkf t = %f\n", t);
     }
     }

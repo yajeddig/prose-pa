@@ -359,6 +359,11 @@ void PROSE_transv_profile_format_bio(s_chyd *pchyd,s_output_hyd ***p_outputs, in
           fprintf(Simul->concentrations[layer][np][j][i], "day ");
           PROSE_print_variables(Simul->concentrations[layer][np][j][i],p_outputs[TRANSV_PROFILE][j]);
 		  //fclose(Simul->concentrations[layer][j][i]);
+          /* SW 23/01/2024 to print sediment layer variables such as volume, height.*/
+          if(layer == VASE)
+              PROSE_print_sediment_variables(Simul->concentrations[layer][np][j][i],p_outputs[TRANSV_PROFILE][j]);
+   
+          fprintf(Simul->concentrations[layer][np][j][i],"\n"); // SW 24/01/2024 add here this function
 	    }
 	  }
     }
@@ -387,7 +392,19 @@ void PROSE_print_variables(FILE *fout,s_output_hyd *pout_hyd)
 		  }
 	  }
   }
-  fprintf(fout,"\n");
+  //fprintf(fout,"\n"); // SW 24/01/2024 move after call of this function
+}
+
+/* SW 23/01/2024 to print sediment layer variables such as volume, height.*/
+void PROSE_print_sediment_variables(FILE *fout,s_output_hyd *pout_hyd)
+{
+  int e;
+  
+  for (e = 0; e < NSEDVAR; e++){
+    if (pout_hyd->pout->biosedvar[e] == YES_TS)
+        fprintf(fout,"%s ",name_sedvar(e));
+  }
+  //fprintf(fout,"\n"); // SW 24/01/2024 move after call of this function
 }
 
 void PROSE_calc_mb_minit_all_sections(s_simul **psimul_bio, double t, double dt, int nsections, int np, FILE *fp)
@@ -1202,7 +1219,7 @@ void  PROSE_print_average_result_bio(s_element_hyd *pele, s_simul **psimul_bio, 
   n = HYD_find_river(river,TRANSV_PROFILE,pchyd,Simul->poutputs);
   // SW 11/02/2022 bug for Marne river
   //ndown_limits = pchyd->counter->ndownstr_limits; 
-  if((fabs(pk - pchyd->upstr_reach[n]->limits[UPSTREAM]->pk) > EPS_TS) && (fabs(pk - pchyd->downstr_reach[n]->limits[DOWNSTREAM]->pk) > EPS_TS)) // pk is not the upstream and downstream pk
+  if((fabs(pk - pchyd->upstr_reach[n]->limits[UPSTREAM]->pk) > EPS_TS) && (fabs(pk - pchyd->downstr_reach[0]->limits[DOWNSTREAM]->pk) > EPS_TS)) // pk is not the upstream and downstream pk
   {
 
       if(pk > pele->center->pk)
@@ -1254,7 +1271,7 @@ void  PROSE_print_average_result_bio(s_element_hyd *pele, s_simul **psimul_bio, 
      id_abs_n = id_abs;
      dx_bio = 0.;
   }
-  if(fabs(pk - pchyd->downstr_reach[n]->limits[DOWNSTREAM]->pk) < EPS_TS) // pk is the downstream pk
+  if(fabs(pk - pchyd->downstr_reach[0]->limits[DOWNSTREAM]->pk) < EPS_TS) // pk is the downstream pk
   {
      id_abs_n = id_abs;
      dx_bio = 0.;
@@ -1290,13 +1307,44 @@ if((psimul_bio[id_abs]->section->compartments[layer] != NULL) && (psimul_bio[id_
 			  val_n = psimul_bio[id_abs_n]->section->compartments[layer][nl]->pannex_var[e][nsub]->C;
 			  val = (1.0 - dx_bio) * val_e + dx_bio * val_n;
 			  if(isnan(val))
-				  fprintf(pfic,"%e ",val_e / Simul->unit_bio_annexvar[e]);
+				  fprintf(pfic,"%e;",val_e / Simul->unit_bio_annexvar[e]);
 				  //LP_error(Simul->poutputs,"Val is nan in PROSE_print_average_result_bio, pk_pele_center = %f pk_pelen_center = %f\n",pele->center->pk,pelen->center->pk);
 			  else
-		          fprintf(pfic,"%e ",val / Simul->unit_bio_annexvar[e]);				  
+		          fprintf(pfic,"%e;",val / Simul->unit_bio_annexvar[e]);				  
 		  }
 	  }
   }
+
+  //SW 23/01/2024 print sediment variables such as volume, height
+  if(layer == VASE)
+  {
+      for(e = 0; e < NSEDVAR_IO; e++)
+      {
+          if(result->pout->biosedvar[e] == YES_TS)
+          {
+              switch(e) 
+             {
+                  case SED_VOL_IO : {
+                     val_e = psimul_bio[id_abs]->section->compartments[VASE][0]->state->volume / pele->length; // vol in m^3/m
+                     break;
+                  }
+                  case SED_H_IO : {
+                     if(psimul_bio[id_abs]->section->compartments[VASE][0]->state->surface > EPS_TS)
+                         val_e = psimul_bio[id_abs]->section->compartments[VASE][0]->state->volume / psimul_bio[id_abs]->section->compartments[VASE][0]->state->surface;
+                     else
+                         val_e = 0.;
+                     break;
+                  }
+                  default : {
+                  val_e = 0.; // unknown variables
+                  break;
+                  }
+              }
+          fprintf(pfic,"%e;",val_e / result->pout->biosedvar_unit[e]);
+        }
+    } // end for
+  } // end if
+
   fprintf(pfic,"\n");
   fflush(pfic);
 }
@@ -2081,7 +2129,14 @@ if(psimul_bio[0]->section->compartments[layer] != NULL) // SW 20/05/2019
     fprintf(fic_water->address,"#PK POINT(XC YC) "); // SW 04/06/2021 add X Y coordinates
 	
     //HYD_print_variables(ppk->fic->address,result);
-	PROSE_print_variables(fic_water->address,result);
+    PROSE_print_variables(fic_water->address,result);
+    
+    /* SW 23/01/2024 to print sediment layer variables such as volume, height.*/
+    if(layer == VASE)
+        PROSE_print_sediment_variables(fic_water->address,result);
+
+    fprintf(fic_water->address,"\n"); // SW 24/01/2024 add here this function
+
 	
     lx = lx0 = 0;
     

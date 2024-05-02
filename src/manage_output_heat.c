@@ -104,10 +104,10 @@ void PROSE_create_files_eb_heat(s_mbheat_mb **pheatmb, FILE *flog) // SW 04/05/2
       if ((pmb->fpmb = fopen(filename,"w")) == NULL) 
           LP_error(flog, "problem when opening the file %s\n",filename);
 
-      fprintf(pmb->fpmb,"t\t");
+      fprintf(pmb->fpmb,"Date;t;");
 
       for(p = FIN_LATERAL_MB; p < NHEAT_TERMS_MB; p++)
-          fprintf(pmb->fpmb,"%s\t", MB_name_process(p));
+          fprintf(pmb->fpmb,"%s;", MB_name_process(p));
       
       fprintf(pmb->fpmb,"\n");
   }
@@ -290,7 +290,7 @@ void  PROSE_print_average_result_heat(s_element_hyd *pele, s_carac_seb **p_surf_
   
   /* SW 26/01/2021 check upstream or downstream elements */
   n = HYD_find_river(river,TRANSV_PROFILE,pchyd,Simul->poutputs);
-  if((fabs(pk - pchyd->upstr_reach[n]->limits[UPSTREAM]->pk) > EPS_TS) && (fabs(pk - pchyd->downstr_reach[n]->limits[DOWNSTREAM]->pk) > EPS_TS)) { // pk is the upstream pk
+  if((fabs(pk - pchyd->upstr_reach[n]->limits[UPSTREAM]->pk) > EPS_TS) && (fabs(pk - pchyd->downstr_reach[0]->limits[DOWNSTREAM]->pk) > EPS_TS)) { // pk is the upstream pk
     if(pk > pele->center->pk)
     {
       pelen = pele->face[X_HYD][TWO]->element[TWO]; //element aval
@@ -480,8 +480,14 @@ void PROSE_print_outputs_heat(double t,s_carac_seb **p_surf_heat_flux,s_output_h
 void Prose_print_energy_balance_heat(double t, s_mbheat_mb *pmb, FILE *fp)
 {
     int p;
+
+    /* SW 06/07/2023 print date to ouput file */
+    TS_print_date(Simul->chronos->pd[CUR_CHR],Simul->date_format,pmb->fpmb, Simul->poutputs);
+    fprintf(pmb->fpmb, " ");
+    TS_print_time(Simul->chronos->pd[CUR_CHR],pmb->fpmb, Simul->poutputs); 
+    fprintf(pmb->fpmb, ";");
     
-    fprintf(pmb->fpmb, "%f\t",t / pmb->time_unit);
+    fprintf(pmb->fpmb, "%f;",t / pmb->time_unit);
     pmb->mbheat[ERROR_MB] = pmb->mbheat[EEND_MB] - pmb->mbheat[EINIT_MB];
 
     for(p = FIN_LATERAL_MB; p < EINIT_MB; p++)
@@ -492,7 +498,7 @@ void Prose_print_energy_balance_heat(double t, s_mbheat_mb *pmb, FILE *fp)
         /* so firstly, Joule is convertied to µE (using J_UE * 0.36), then convertied in output unit asked by user (for example in cal) in print step */
 
         pmb->mbheat[p] *= J_UE * 0.36;
-        fprintf(pmb->fpmb, "%e\t",pmb->mbheat[p] * pmb->unit_mb_heat);
+        fprintf(pmb->fpmb, "%.6f;",pmb->mbheat[p] * pmb->unit_mb_heat); // SW 06/07/2023 replace %e\t by %.6f;
         pmb->mbheat[p] = 0.;
     }
     if(fabs(pmb->mbheat[ERROR_MB]) > 1000)
@@ -504,7 +510,7 @@ void Prose_print_energy_balance_heat(double t, s_mbheat_mb *pmb, FILE *fp)
         /* so firstly, Joule is convertied to µE (using J_UE * 0.36), then convertied in output unit asked by user (for example in cal) in print step */
 
         pmb->mbheat[p] *= J_UE * 0.36;
-        fprintf(pmb->fpmb, "%e\t",pmb->mbheat[p] * pmb->unit_mb_heat);
+        fprintf(pmb->fpmb, "%.6f;",pmb->mbheat[p] * pmb->unit_mb_heat); // SW 06/07/2023 replace %e\t by %.6f;
         pmb->mbheat[p] = 0.;
         
     }

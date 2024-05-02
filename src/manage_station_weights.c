@@ -135,8 +135,8 @@ void Prose_create_obs_station_weight(s_carac_assim *passim, FILE *fp)
 
 	    sum +=  dist_depl[i] * mod_1[i] ;
 
-	    LP_printf(Simul->poutputs, "t_dep =%f , dist_depl=%f \n" ,  t_depl[i], dist_depl[i] );
-	    LP_printf(Simul->poutputs,"sum = %f \n",sum);
+	    //LP_printf(Simul->poutputs, "t_dep =%f , dist_depl=%f \n" ,  t_depl[i], dist_depl[i] );
+	    //LP_printf(Simul->poutputs,"sum = %f \n",sum);
 
         }
    
