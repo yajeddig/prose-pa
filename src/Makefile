@@ -50,7 +50,7 @@ PROGRAMME = $(NAME)$(VERSION)
 PATH_INST=${LIB_HYDROSYSTEM_PATH}
 
 
-NAME = prose-p
+NAME = prose-pa
 SHELL = /bin/bash
 
 VERSION=0.78
@@ -140,8 +140,8 @@ OPTW= -Wno-write-strings
 # This option indicates the version of GCC to the pre-compiler to properly compile the lexical.l
 CFLAGSD = -DGCC$(GCC_VER) #Mettre en commentaire pour certaine version de lex
 OPTOMP= -fopenmp
-OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE
-#OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE -DCDA
+#OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE # forward computing paralellized by transport species and then by cross sections for the biogeochemistry
+OPTD = -DOMP $(OPTOMP) -DCOUPLED_RIVE -DCDA #data assimilation parellized based on particles
 CFLAGS_GLOBAUX= $(OPTCOMP) $(OPTW) 
 CFLAGS= $(CFLAGS_GLOBAUX) $(OPTD)  $(CFLAGSD) 
 
