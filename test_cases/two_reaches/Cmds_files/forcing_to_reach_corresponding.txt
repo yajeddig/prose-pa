@@ -1,0 +1,3 @@
+Amont	Aval	Voie	Id_safran
+upstream_point middle_point 1 890
+middle_point downstream_point 1 975

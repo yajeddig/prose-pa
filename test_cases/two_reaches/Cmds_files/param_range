@@ -1,0 +1,15 @@
+! Exp. param_range
+! PARAM_NAME    UNIT          VAL_MIN    VAL_MAX    S_PERCENT
+Rm_phy          [/h]          0.001      0.021      0.10
+a_phy           [m^2s/uE/h]   0.0003     0.0018     0.10
+pmax_phy        [/h]          0.09       0.546      0.10
+eta_chla_phy    [l/ugchla/m]  0.006      0.054      0.10
+c_chla_phy      [mgC/ugchla]  0.02       0.13       0.10
+eta_water       [/m]          0.2        0.8        0.10
+Topt_phy        [°C]          10.        37.        0.10
+mumax_bact      [/h]          0.01       0.13       0.10
+yield_bact      [-]           0.03       0.5        0.04
+mort_bact       [/h]          0.01       0.08       0.04
+Topt_bact       [°C]          10         35         0.10
+Krea_navig      [m/h]         0.         0.05       0.10
+b1_river        [-]           0.1        0.5        0.04

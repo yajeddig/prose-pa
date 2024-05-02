@@ -1,0 +1,67 @@
+! Exp. phytoplankton
+PHY                                  ! Species keyword
+
+dia = {                              ! Subspecies name, SPECIES_NUM = 1
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 0.004
+
+    ! Living species properties
+    Topt  = [°C] 21.
+    sigma = [°C] 13.
+
+    ! Monod-Michaelis-Menten kinetics
+    kmich phys = 0.06
+    kmich N    = [ugN/l] 14
+    kmich P    = [ugP/l] 15.5
+    kmich NH4  = [umol/l] 5.
+    kmich Si   = [mgSi/l] 0.196
+
+    ! Biochemical composition
+    C/ P    = [mgC/mgP] 40.
+    C/ N    = [mgC/mgN] 7.
+    C/ si   = [mgC/mgSI] 1.071429
+    C/ chla = [mgC/ugchla] 0.035
+
+    dbo     = [molO2/molC] 1.
+
+
+    ! Biogeochemical processes
+    photosynthesis = { 
+        eta      = [/m] 0.2
+        eta_mes  = [l/mg/m] 0.042
+        eta_chla = [l/ugchla/m] 0.02
+        alpha    = [m^2s/uE/h] 0.0012
+        beta     = [m^2s/uE/h] 0
+        pmax     = [/h] 0.2
+    }
+	growth = { 
+        sr    = [/h] 0.15
+        cr    = [/h] 0.2
+        mumax = [/h] 0.05
+    }
+
+	excretion = { 
+        excr_cst  = [/h] 0.001085714
+        excr_phot = 0.0005714286
+    }
+
+	respiration = { 
+        maint = [/h] 0.002
+        energ = 0.5
+    }
+
+	mortality = { 
+        mort         = [/h] 0.025
+        phi_lim_mort = [mgC/l] 7
+        delta        = 1.
+    }
+}

@@ -1,0 +1,11 @@
+upstream_point -> middle_point 1 {
+	strickler = {
+		50 20.0
+	}
+};
+
+middle_point -> downstream_point 1 {
+	strickler = {
+		50 20.0
+	}
+};

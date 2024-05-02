@@ -1,0 +1,14 @@
+NH4                                               ! Species keyword
+
+ammonium =                                         ! Subspecies name, SPECIES_NUM = 1
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Diffusion coefficient at water-sediment interface
+    ds  = [m^2/s] 0.0015
+}

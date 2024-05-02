@@ -1,0 +1,84 @@
+MOD                                               ! Species keyword
+
+mod1 = {                                          ! Subspecies name, SPECIES_NUM = 1
+	
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+
+    ! Ratio of mod1 in death of living  species
+    compose_mo  = 0.3
+
+    ! Biochemical composition
+    C/ N = [mgC/mgN] 7.   
+    C/ P = [mgC/mgP] 40.
+
+    ! Diffusion coefficient at water-sediment interface
+    ds   = [m^2/s] 0.0015  
+
+    ! Monod-Michaelis-Menten kinetics 
+    kmich mod = [mgC/l] 0.25   
+
+    ! To consider mod1 as substrat for heterotrophic bacteria uptake, a highest hydrolysis rate is defined
+    hydrolysis = {
+        kc_hydr = [/h] 0.75
+    }	
+} 
+
+
+mod2 =  {                                           ! Subspecies name, SPECIES_NUM = 2
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type = FREE_WATER
+    advection = yes
+    diffusion = no
+    diff_mol = [m^2/s] 0.
+
+    ! Ratio of mod1 in death of living  species
+    compose_mo  = 0.15
+
+    ! Biochemical composition
+    C/ N =  [mgC/mgN] 7.
+    C/ P = [mgC/mgP] 40.
+
+    ! Diffusion coefficient at water-sediment interface
+    ds  = [m^2/s] 0.0015   
+
+    ! Monod-Michaelis-Menten kinetics
+    kmich mod = [mgC/l] 0.200000
+
+    ! Hydrolysis process
+    hydrolysis = { 
+        kc_hydr = [/h] 0.550000
+    }
+} 
+
+mod3 = {                                           ! Subspecies name, SPECIES_NUM = 3
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type = FREE_WATER
+    advection = yes
+    diffusion = no
+    diff_mol = [m^2/s] 0.
+
+    ! Biochemical composition
+    compose_mo  = 0.05
+    
+    ! Biochemical composition
+    C/ N = [mgC/mgN] 7.
+    C/ P =  [mgC/mgP] 40.
+
+    ! Diffusion coefficient at water-sediment interface
+    ds  = [m^2/s] 0.0015
+
+    ! Monod-Michaelis-Menten kinetics
+    kmich mod =  [mgC/l] 0.0
+
+    ! Hydrolysis process
+    hydrolysis = {
+        kc_hydr = [/h] 0.0
+    }
+}

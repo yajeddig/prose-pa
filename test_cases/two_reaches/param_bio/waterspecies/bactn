@@ -1,0 +1,80 @@
+! Exp. nitrifying bacteria
+BACTN                                              ! Species keyword
+
+ammonia_oxidizing =                                ! Subspecies name, SPECIES_NUM = 1
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 0.1
+
+    ! Living species properties
+    Topt  = [°C] 23.
+    sigma = [°C] 18.
+
+    ! Monod-Michaelis-Menten kinetics
+    kmich nh4 = [mgN/l] 0.75
+    kmich O2  = [mgO2/l] 0.64
+
+    ! Biochemical composition
+    C/ P = [mgC/mgP] 40.
+    C/ N = [mgC/mgN] 7.
+
+    ! Biogeochemical processes
+    growth = {
+	   mumax        = [/h] 0.07
+	   yield_nit    = [mgC/mgN] 0.07
+	   stoechio_nit = [molO2/molN] 1.5
+           k_bact = [mgC/l] 0.00003 ! limitation for sediment layer
+    }
+		 
+    mortality = {
+        mort = [/h] 0.005
+    }
+}
+
+nitrite_oxidizing =                                 ! Subspecies name, SPECIES_NUM = 2
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 0.1
+
+    ! Living species properties
+    Topt  = [°C] 23.
+    sigma = [°C] 18.
+
+    ! Monod-Michaelis-Menten kinetics
+    kmich no2 = [mgN/l] 0.05
+    kmich O2  = [mgO2/l] 1.088
+
+    ! Biochemical composition
+    C/ P =  [mgC/mgP] 40.  
+    C/ N =  [mgC/mgN] 7.
+
+    ! Biogeochemical processes
+    growth = {
+        mumax        = [/h] 0.05
+        yield_nit    = [mgC/mgN] 0.02
+        stoechio_nit = [molO2/molN] 0.5
+        k_bact = [mgC/l] 0.00003 ! limitation for sediment layer
+    }
+		 
+    mortality = {
+        mort = [/h] 0.005
+    }
+}

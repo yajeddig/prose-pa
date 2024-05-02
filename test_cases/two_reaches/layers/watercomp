@@ -1,0 +1,28 @@
+! In file waterlayer
+WATER                     ! LAYER TYPE (WATER)
+water1_s1 = {             ! LAYER_NAME = { ... }
+    initial_concentrations = {
+        ! SPECIES SPECIES_NUM = [UNIT]  CONC_INIT
+        bact 1 = [mmol/m^3]  0 0.833333
+        bactn 1 = [mmol/m^3]  0 0.083333
+        bactn 1 = [mmol/m^3]  0 0.020000
+        bif 1 = [mmol/m^3]  0 0.416667
+        bif 2 = [mmol/m^3]  0 0.833333
+        phy 1 = [mmol/m^3]  0 41.666667
+        zoo 1 = [mmol/m^3]  0 0.007779
+        zoo 2 = [mmol/m^3]  0 0.000778
+        nh4 1 = [mmol/m^3]  0 7.857143
+        no2 1 = [mmol/m^3]  0 10.000000
+        no3 1 = [mmol/m^3]  0 387.142860
+	mes 1 = [mg/l]  0 25.		   
+	mod 1 = [mmol/m^3] 0 101.666667
+	mod 2 = [mmol/m^3] 0 115.000001
+	mod 3 = [mmol/m^3] 0 195.833335 
+	mop 1 = [mmol/m^3] 0 13.333333
+        mop 2 = [mmol/m^3] 0 30.000000
+        mop 3 = [mmol/m^3] 0 100.000001
+        po4 1 = [mmol/m^3] 0 2.258065
+        si_d 1 = [mmol/m^3] 0 110.357144	   
+	o2 1 = [mmol/m^3]  0 284.625002
+    }							   
+}

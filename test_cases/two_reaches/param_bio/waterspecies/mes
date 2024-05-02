@@ -1,0 +1,16 @@
+MES                                            ! Species keyword
+
+mes1 =                                         ! Subspecies name, SPECIES_NUM = 1
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 2.0
+    phi  = 0.9
+    vsed = [m/h] 1.
+} 

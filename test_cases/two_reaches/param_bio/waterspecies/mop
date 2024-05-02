@@ -1,0 +1,82 @@
+MOP                                          ! Species keyword
+
+mop1 =                                       ! Subspecies name, SPECIES_NUM = 1
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 1.
+
+    ! Ratio of mop1 in death of living  species
+    compose_mo = 0.3
+  
+    ! Biochemical composition
+    C/ P = [mgC/mgP] 40.
+    C/ N = [mgC/mgN] 7.
+
+    ! Biogeochemical processes
+	hydrolysis = {
+        kc_hydr = [/h] 0.005
+    }
+}
+
+mop2 =                                       ! Subspecies name, SPECIES_NUM = 2
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 1.
+
+    ! Ratio of mop2 in death of living  species
+    compose_mo = 0.15
+  
+    ! Biochemical composition
+    C/ P = [mgC/mgP] 40.
+    C/ N = [mgC/mgN] 7.
+
+    ! Biogeochemical processes
+    hydrolysis = {
+        kc_hydr = [/h] 0.000225
+    }
+}
+
+mop3 =                                       ! Subspecies name, SPECIES_NUM = 3
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 1.
+
+    ! Ratio of mop3 in death of living  species
+    compose_mo = 0.05
+  
+    ! Biochemical composition
+    C/ P = [mgC/mgP] 40.
+    C/ N = [mgC/mgN] 7.
+
+    ! Biogeochemical processes
+    hydrolysis = {
+        kc_hydr = [/h] 0.0
+    }
+}

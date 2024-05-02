@@ -1,0 +1,182 @@
+INPUT_FOLDERS   = $HOME/Programmes/prose-pa/test_cases/two_reaches/
+                = $HOME/Programmes/prose-pa/test_cases/two_reaches/Cmds_files
+                = $HOME/Programmes/prose-pa/test_cases/two_reaches/layers
+                = $HOME/Programmes/prose-pa/test_cases/two_reaches/param_bio/waterspecies
+                = $HOME/Programmes/prose-pa/test_cases/two_reaches/Singularities
+                = $HOME/Programmes/prose-pa/test_cases/two_reaches/Reaches
+                = $HOME/Programmes/prose-pa/test_cases/two_reaches/bathymetry
+                = $HOME/Programmes/prose-pa/test_cases/two_reaches/inflows
+                
+OUTPUT_FOLDER   = $HOME/OUTPUT_ProSe-PA/OUTPUT_FULL_TEMPLATE/steady_state
+
+! - - - - - - - - - - - - - - - - - - - - - - - End of FLOD-IN and FOLD-OUT blocks
+SIMULATION = {
+    test_simulation	
+
+    TIME = {
+        DATE_FORMAT  = FR_TS
+        YEAR0_JULIAN = 2007
+        T_INI        = 01/01/2007 00:00:00 ! [d] 0. 
+        T_END        = 01/01/2008 00:00:00 ! [d] 365.
+        DT           = [min] 15.
+    }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMTIME block
+    SETTINGS = {
+        REGIME            = steady
+        HYD               = yes
+        TTC               = yes
+        RIVE              = yes
+        TUBE              = no
+        DYNAMIC_T         = yes
+        DA                = no
+        DA_METHOD         = PF
+        NUM_THREAD        = 20
+        NUM_PARTICULES    = 1
+        NUM_THREAD_PAR    = 1
+        NUM_TUBE_DEF      = 1
+        ALPHA_DA          = 0.3
+        ERROR_OBS         = 0.10
+        S_PERCENT         = 0.10
+        RANDOM_WALK       = loop
+        SOLVER            = sp_prose
+        DEFAULT_T_INFLOWS = [°C] 20.
+        DBO_OXY           = [molO2/molC] 1.0
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-GSET block
+        SPECIES = {
+            WATER = {
+                ! Particulate species
+                include phy
+                include mop
+                include bact
+                include bactn
+                include mes
+                include zoo
+                include bif
+                ! Dissolved species
+                include o2
+                include no3
+                include mod
+                include nh4
+                include po4
+                include no2
+                include si_d
+            }
+        }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-SPE block	
+        MACROSPECIES = {
+            TOC = {
+                total_organic_carbon
+                SHARE_MOP = {
+                    BIODEGRADABLE      = {
+                        VAL     = 0.3
+                    }
+                    FAST_BIODEGRADABLE = { val = 0.7 }
+                }
+                SHARE_MOD = {
+                    BIODEGRADABLE      = {
+                        VAL     = 0.3
+                    }
+                    FAST_BIODEGRADABLE = { val = 0.7 }
+                }
+            }
+        }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-MSPE block	
+        HYDRAULIC = {
+            NDIM                = 1
+            CALCULATE_CURVATURE = no
+            CURVATURE           = 0
+            DX                  = [m] 500
+            EPS_Q               = [m^3/s] 0.000001
+            EPS_Z               = [m] 0.000001
+            GLOBAL_STRICKLER    = 20.
+            DZ                  = [m] 0.1
+            UPSTREAM_HMIN       = [m] 0.
+            DOWNSTREAM_HMAX     = [m] 20.
+            THETA               = 0.9
+            SCHEM_TYPE          = ST_VENANT
+            #INITIALIZATION      = {
+            #    INIT_Z_FILE = include init_Z
+            #    INIT_Q_FILE = include init_Q
+            #}
+            NETWORK_DESCRIPTION = {
+                SINGULARITIES = { include sing_case_study }
+                REACHES       = { include reaches_case_study }
+                PROFILES      = { include profils_case_study }
+                INFLOWS       = { include inflows_case_study }
+            }
+        }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-HYD block
+!        METEO = {
+!            MET_CORRESP = forcing_to_reach_corresponding.txt
+!            MET_DATA    = {
+!                FOLDER      = $HOME/Programmes/prose-pa/test_cases/two_reaches/DATA_METEO/
+!                YEAR0_METEO = 1850
+!                FORCINGS    = {
+!                    T_AIR  = TMPH_case_study.txt
+!                    P_ATM  = PRESSURE_grid_safran.dat
+!                    H_SW   = SWDH_case_study.txt
+!                    H_LW   = LWDH_case_study.txt
+!                    HUMID  = HRLH_case_study.txt
+!                    U_WIND = VNTH_case_study.txt
+!                }
+!            }
+!        }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-MTO block
+        HEAT_TRANSPORT  = {
+            THETA_T     = 1.0
+            INIT_T_FILE = [°C] include init_T
+        }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-HT block
+        TRANSPORT =  {
+            THETA_TTC = 0.9
+        }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-ST block
+        BIOLOGY = {
+            NUMERICAL_METHOD = EXPLICIT
+            MAX_DIV_DT       = 1.0
+            DZ_RIVE          = [m] 0.1
+            LAYERS           = {
+                include watercomp
+                include vasecomp
+            }
+            EXCHANGES         = {
+                CALC_SEDIM_EROS        = SIMULTANEOUS_PROSE
+                ETA_HYD                = [g/cm^3] 0.0013
+                PNAVIG                 = [g/m^2/s] 0.0005
+            }
+            METEO             = {
+                TEMPERATURE = {
+                    MEAN               = [°C] 12.
+                    AMPLITUDE          = [°C] 20.
+                    DELAY              = [h]  29. 
+                }
+                WIND        = { [d]	[m/s]
+                                0. 2.
+                }
+                RADIATION   = {
+                    MEAN               = [uE/m^2/s] 542
+                    AMPLITUDE          = [uE/m^2/s] 288
+                    ATTENUATION_FACTOR = 1
+                }
+                PHOTOPERIOD = {
+                    MEAN               = [h] 12.
+                    AMPLITUDE          = [h] 4.2
+                }
+            }
+        }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-BIO block
+        param_range_da = { include param_range }
+! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET-DA block
+    } ! - - - - - - - - - - - - - - - - - - - - - - - End of SIMSET block
+} ! - - - - - - - - - - - - - - - - - - - - - - - End of SIM block
+
+OUTPUTS = {
+    PRINT_PK    = {
+        yes
+        FILE_NAME = pks 
+    }
+    FINAL_STATE = {
+        yes
+        FILE_NAME = seine_final }
+    MB_ELEMENTS = { no }
+} !----------------------- End of general OUTPUTS block
