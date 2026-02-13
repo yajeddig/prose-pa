@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>ProSe-PA v0.78 — Architecture & Logigrammes</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: #f5f6fa; color: #2d3436; padding: 2rem; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.3rem; color: #0a3d62; }
+  h2 { font-size: 1.35rem; margin: 2.5rem 0 0.8rem; color: #1e3799; border-bottom: 2px solid #dfe6e9; padding-bottom: 0.3rem; }
+  h3 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; color: #474787; }
+  p, li { font-size: 0.92rem; line-height: 1.55; }
+  .subtitle { color: #636e72; font-size: 0.95rem; margin-bottom: 2rem; }
+  .diagram-container { background: #fff; border-radius: 8px; padding: 1.5rem; margin: 1rem 0; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow-x: auto; }
+  .diagram-container .mermaid { display: flex; justify-content: center; }
+  .legend { background: #dfe6e9; border-radius: 6px; padding: 0.8rem 1.2rem; margin: 0.8rem 0; font-size: 0.85rem; }
+  .legend span { display: inline-block; width: 14px; height: 14px; border-radius: 3px; vertical-align: middle; margin-right: 5px; }
+  .legend .c-hyd { background: #74b9ff; }
+  .legend .c-ttc { background: #a29bfe; }
+  .legend .c-rive { background: #55efc4; }
+  .legend .c-seb { background: #ffeaa7; }
+  .legend .c-da { background: #fab1a0; }
+  .legend .c-io { background: #b2bec3; }
+  table { border-collapse: collapse; margin: 0.8rem 0; font-size: 0.88rem; width: 100%; }
+  th, td { border: 1px solid #dfe6e9; padding: 6px 10px; text-align: left; }
+  th { background: #0a3d62; color: #fff; }
+  tr:nth-child(even) { background: #f1f2f6; }
+  code { background: #dfe6e9; padding: 1px 5px; border-radius: 3px; font-size: 0.88em; }
+  @media print { body { padding: 0.5cm; } .diagram-container { box-shadow: none; border: 1px solid #ccc; } }
+</style>
+</head>
+<body>
+
+<h1>ProSe-PA v0.78 — Architecture & Logigrammes</h1>
+<p class="subtitle">Modèle hydro-biogéochimique 1D pour rivières urbanisées — Mines Paris / Geosciences</p>
+
+<!-- ============================================================ -->
+<h2>1. Architecture générale</h2>
+<!-- ============================================================ -->
+
+<div class="diagram-container">
+<pre class="mermaid">
+graph TB
+    subgraph INPUTS["📥 FICHIERS D'ENTRÉE"]
+        CMD["Fichier de commande<br/><i>.comm</i>"]
+        GEOM["Géométrie réseau<br/><i>sections, biefs, profils</i>"]
+        HYDRO_IN["Conditions aux limites hydro<br/><i>Q(t), Z(t) aval</i>"]
+        BIO_IN["Conditions aux limites bio<br/><i>concentrations apports</i>"]
+        METEO["Données météo / SAFRAN<br/><i>T_air, Rg, Rh, Vent, P</i>"]
+        OBS["Observations HF O₂<br/><i>séries temporelles</i>"]
+        INIT["Conditions initiales<br/><i>C₀, T₀, état final antérieur</i>"]
+    end
+
+    subgraph CORE["⚙️ PROSE-PA (main_PROSE.c)"]
+        direction TB
+        PARSER["Parser Bison/Flex<br/><i>input.y / lexical.l</i>"]
+        SIMUL["Structure Simul<br/><code>s_simul_PROSE</code>"]
+        MODES{{"Régime ?"}}
+        STEADY["Régime permanent"]
+        TRANSIENT["Régime transitoire"]
+    end
+
+    subgraph LIBS["📚 12 BIBLIOTHÈQUES"]
+        direction TB
+        subgraph UTIL["Utilitaires"]
+            LP["libprint 1.24<br/><i>affichage, logs</i>"]
+            TS["libts 1.74<br/><i>séries temporelles</i>"]
+            PC["libpc 0.05<br/><i>parallélisme OMP</i>"]
+            GC["libgc 0.13<br/><i>solveur gradient conjugué</i>"]
+            IO["libio 0.21<br/><i>gestion I/O fichiers</i>"]
+            CHR["libchronos 0.13<br/><i>gestion temporelle</i>"]
+            MB["libmb 0.01<br/><i>bilans de masse</i>"]
+        end
+        subgraph PHYS["Physique"]
+            HYD["libhyd 0.44<br/><i>hydraulique 1D / pseudo-2D</i>"]
+            TTC["libttc 0.13<br/><i>transport advection-dispersion</i>"]
+            SEB["libseb 0.09<br/><i>bilan énergétique surface</i>"]
+            TUB["libtube 0.08<br/><i>tubes de courant navigation</i>"]
+        end
+        subgraph BIO["Biogéochimie"]
+            RIVE["c-rive 0.37<br/><i>modèle RIVE (C, O, N, P, Si)</i>"]
+        end
+    end
+
+    subgraph OUTPUTS["📤 FICHIERS DE SORTIE"]
+        HYD_OUT["Sorties hydrauliques<br/><i>Q, H, V par bief</i>"]
+        BIO_OUT["Sorties biogéochimiques<br/><i>concentrations par espèce</i>"]
+        TEMP_OUT["Sorties thermiques<br/><i>T(x,t)</i>"]
+        MB_OUT["Bilans de masse<br/><i>par espèce, par domaine</i>"]
+        DA_OUT["Sorties assimilation<br/><i>poids, paramètres, Neff</i>"]
+        TUBE_OUT["Sorties tubes navigation<br/><i>maillage, hydro tubes</i>"]
+        DEBUG["Fichier debug<br/><i>argv[2]</i>"]
+        EB_OUT["Bilan énergétique<br/><i>flux atmosphériques</i>"]
+    end
+
+    CMD --> PARSER
+    GEOM --> PARSER
+    HYDRO_IN --> PARSER
+    BIO_IN --> PARSER
+    METEO --> PARSER
+    OBS --> PARSER
+    INIT --> PARSER
+    PARSER --> SIMUL
+    SIMUL --> MODES
+    MODES -->|STEADY| STEADY
+    MODES -->|TRANSIENT| TRANSIENT
+
+    STEADY --> LIBS
+    TRANSIENT --> LIBS
+    HYD --> TTC
+    TTC --> RIVE
+    SEB --> TTC
+    GC --> TTC
+    GC --> HYD
+    CHR --> HYD
+    TS --> HYD
+    TS --> RIVE
+    IO --> HYD
+
+    LIBS --> HYD_OUT
+    LIBS --> BIO_OUT
+    LIBS --> TEMP_OUT
+    LIBS --> MB_OUT
+    LIBS --> DA_OUT
+    LIBS --> TUBE_OUT
+    LIBS --> DEBUG
+    LIBS --> EB_OUT
+
+    style INPUTS fill:#dfe6e9,stroke:#636e72
+    style CORE fill:#ffeaa7,stroke:#fdcb6e
+    style LIBS fill:#e8f5e9,stroke:#81c784
+    style OUTPUTS fill:#e3f2fd,stroke:#64b5f6
+    style UTIL fill:#f5f5f5,stroke:#b2bec3
+    style PHYS fill:#e8eaf6,stroke:#7986cb
+    style BIO fill:#e8f5e9,stroke:#66bb6a
+</pre>
+</div>
+
+<div class="legend">
+    <b>Couplage physique :</b>
+    libhyd (Q,H,V) → libttc (advection-dispersion C) → c-rive (réactions biogéochimiques).
+    libseb (flux atmosphériques) → libttc (transport thermique T).
+    Le solveur libgc (gradient conjugué / sparse) est partagé entre hydraulique et transport.
+</div>
+
+<!-- ============================================================ -->
+<h2>2. Modules activables (flags <code>calc_mode[]</code>)</h2>
+<!-- ============================================================ -->
+
+<table>
+<tr><th>Flag</th><th>Module</th><th>Description</th><th>Dépendances</th></tr>
+<tr><td><code>HYD</code></td><td>Hydraulique</td><td>Résolution Q, H, V — Saint-Venant simplifié 1D</td><td>libhyd, libgc</td></tr>
+<tr><td><code>TTC</code></td><td>Transport</td><td>Advection-dispersion des espèces dissoutes et particulaires</td><td>libttc, libgc</td></tr>
+<tr><td><code>RIVE</code></td><td>Biogéochimie</td><td>Modèle RIVE — cycles C, O₂, N, P, Si dans colonne d'eau + benthos</td><td>c-rive</td></tr>
+<tr><td><code>H_T</code></td><td>Thermique</td><td>Transport de la température par advection-dispersion</td><td>libttc</td></tr>
+<tr><td><code>SEB</code></td><td>Bilan énergétique</td><td>Échanges atmosphère/surface : Rg, Ra, convection, évaporation</td><td>libseb, données SAFRAN</td></tr>
+<tr><td><code>TUB</code></td><td>Tubes de courant</td><td>Génération des tubes de courant pour modéliser la navigation</td><td>libtube</td></tr>
+<tr><td><code>DA</code></td><td>Assimilation</td><td>Filtre particulaire (PF) ou Ensemble Kalman Filter (EnKF)</td><td>N particules, observations O₂ HF</td></tr>
+<tr><td><code>MB_BIO</code></td><td>Bilan de masse bio</td><td>Calcul et sortie des bilans de masse par espèce</td><td>libmb</td></tr>
+<tr><td><code>EB_HEAT</code></td><td>Bilan énergétique T</td><td>Bilan d'énergie détaillé sur la température</td><td>SEB requis</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>3. Logigramme — Mode Simulation Directe</h2>
+<!-- ============================================================ -->
+
+<h3>3.1 Phase d'initialisation (commune)</h3>
+
+<div class="diagram-container">
+<pre class="mermaid">
+flowchart TD
+    START(["<b>Démarrage</b><br/>prose-pa CommandFile DebugFile"]) --> INIT_SIMUL["Créer structure <code>Simul</code><br/><code>PROSE_init_simulation()</code>"]
+    INIT_SIMUL --> PARSE["<b>Parser le fichier de commande</b><br/><code>lecture(argv[1])</code><br/>→ Bison/Flex : input.y / lexical.l<br/>→ Lecture géométrie, CL, params bio, météo, DA"]
+    PARSE --> HYD_INIT["<b>Init hydraulique</b><br/><code>HYD_initialize_hydro()</code><br/><code>HYD_assign_river()</code><br/><code>HYD_initialize_GC()</code>"]
+    HYD_INIT --> CHECK_TTC{"Transport<br/>activé ?<br/><code>TTC=YES</code>"}
+
+    CHECK_TTC -->|Oui| ALLOC_TTC["Allouer matrices transport<br/>sparse ou GC par espèce"]
+    CHECK_TTC -->|Non| CHECK_HT
+
+    ALLOC_TTC --> CHECK_HT{"Thermique<br/>activé ?<br/><code>H_T=YES</code>"}
+    CHECK_HT -->|Oui| INIT_TEMP["Init espèce T°<br/><code>PROSE_init_temp_specie()</code><br/><code>PROSE_init_heat_transport()</code>"]
+    CHECK_HT -->|Non| CHECK_RIVE
+
+    INIT_TEMP --> CHECK_SEB{"SEB activé ?"}
+    CHECK_SEB -->|Oui| INIT_METEO["Charger données SAFRAN<br/>Lier cellules météo → éléments<br/><code>PROSE_link_icell_to_imet_SEB()</code><br/>Allouer flux de surface"]
+    CHECK_SEB -->|Non| CHECK_RIVE
+    INIT_METEO --> CHECK_RIVE
+
+    CHECK_RIVE{"Biogéochimie<br/>activée ?<br/><code>RIVE=YES</code>"}
+    CHECK_RIVE -->|Oui| INIT_BIO["<b>Init RIVE par particule np</b><br/>• <code>PROSE_init_reoxy_species()</code><br/>• <code>PROSE_fill_param_base()</code><br/>• <code>PROSE_alloc_u_dist()</code><br/>• <code>PROSE_fill_neighbor()</code><br/>• <code>PROSE_init_param_reaction()</code><br/>• <code>PROSE_init_O2_conc_sat()</code><br/>• Lier hydro↔rive géom & hydro"]
+    CHECK_RIVE -->|Non| CHECK_DA
+
+    INIT_BIO --> CHECK_DA{"Assimilation<br/>activée ?<br/><code>DA=YES</code>"}
+    CHECK_DA -->|Oui| INIT_DA["Init assimilation<br/><code>Prose_init_assimilation()</code><br/><code>Prose_init_rand_param()</code><br/>Créer fichiers poids/params"]
+    CHECK_DA -->|Non| REGIME
+    INIT_DA --> REGIME
+
+    REGIME{{"<b>Régime hydraulique ?</b>"}}
+    REGIME -->|STEADY| STEADY_MODE["▶ Mode Permanent<br/><i>(voir §3.2)</i>"]
+    REGIME -->|TRANSIENT| TRANSIENT_MODE["▶ Mode Transitoire<br/><i>(voir §3.3)</i>"]
+
+    style START fill:#0a3d62,color:#fff
+    style PARSE fill:#ffeaa7,stroke:#fdcb6e
+    style HYD_INIT fill:#74b9ff,stroke:#0984e3
+    style ALLOC_TTC fill:#a29bfe,stroke:#6c5ce7
+    style INIT_TEMP fill:#a29bfe,stroke:#6c5ce7
+    style INIT_METEO fill:#ffeaa7,stroke:#f39c12
+    style INIT_BIO fill:#55efc4,stroke:#00b894
+    style INIT_DA fill:#fab1a0,stroke:#e17055
+    style REGIME fill:#fd79a8,stroke:#e84393,color:#fff
+</pre>
+</div>
+
+<h3>3.2 Régime permanent (STEADY)</h3>
+
+<div class="diagram-container">
+<pre class="mermaid">
+flowchart TD
+    S_START(["Régime STEADY"]) --> S_HYD["<b>Hydraulique permanente</b><br/><code>HYD_steady_state()</code><br/>→ Q, H, V stationnaires"]
+    S_HYD --> S_PRINT1["Imprimer sorties hydro + bio initiales"]
+
+    S_HYD --> S_CHK_TUB{"TUB ?"}
+    S_CHK_TUB -->|Oui| S_TUBE["Construire tubes de courant<br/><code>build_tube_domain_for_all_reaches()</code>"]
+    S_CHK_TUB -->|Non| S_CHK_TTC
+
+    S_TUBE --> S_CHK_TTC{"TTC + RIVE ?"}
+    S_CHK_TTC -->|Oui| S_TRANSPORT["<b>Transport toutes espèces</b><br/><code>PROSE_ttc_all_species()</code><br/>→ Résoudre advection-dispersion<br/>→ Maj concentrations bio"]
+    S_CHK_TTC -->|Non| S_CHK_HT
+
+    S_TRANSPORT --> S_CHK_HT{"H_T ?"}
+    S_CHK_HT -->|Oui| S_HEAT["<b>Transport thermique</b><br/>Maj météo → <code>PROSE_update_meteo_for_HT()</code><br/>Résoudre T° → <code>PROSE_ttc_one_species()</code><br/>Itérer jusqu'à convergence (ε)"]
+    S_CHK_HT -->|Non| S_END
+
+    S_HEAT --> S_PRINT_T["Imprimer sorties T°"]
+    S_PRINT_T --> S_END
+
+    S_END(["FIN — Impression bilan de masse final"])
+
+    style S_START fill:#0a3d62,color:#fff
+    style S_HYD fill:#74b9ff,stroke:#0984e3
+    style S_TRANSPORT fill:#a29bfe,stroke:#6c5ce7
+    style S_HEAT fill:#ffeaa7,stroke:#f39c12
+    style S_END fill:#2d3436,color:#fff
+</pre>
+</div>
+
+<h3>3.3 Régime transitoire (TRANSIENT) — Simulation directe (<code>DA=NO</code>)</h3>
+
+<div class="diagram-container">
+<pre class="mermaid">
+flowchart TD
+    T_START(["Régime TRANSIENT"]) --> T_PRINT0["Imprimer conditions initiales<br/>t = t₀"]
+    T_PRINT0 --> T_WHILE{"t ≤ t_end ?"}
+
+    T_WHILE -->|Non| T_FIN(["FIN — Bilan masse final<br/>État final si demandé"])
+    T_WHILE -->|Oui| T_HYD
+
+    T_HYD["<b>① HYDRAULIQUE</b><br/><code>HYD_transient_hydraulics()</code><br/>→ Résoudre Q(t), H(t), V(t)<br/>→ t = t + dt"]
+
+    T_HYD --> T_CHK_HT{"H_T ?"}
+    T_CHK_HT -->|Oui| T_SEB_CHK{"SEB ?"}
+    T_CHK_HT -->|Non| T_CHK_TTC
+
+    T_SEB_CHK -->|Oui| T_SEB["<b>② BILAN ÉNERGÉTIQUE</b><br/><code>PROSE_update_meteo_for_HT()</code><br/>→ Calculer flux surface :<br/>Rg, Ra, H_conv, LE, H_cond"]
+    T_SEB_CHK -->|Non| T_HEAT
+    T_SEB --> T_HEAT
+
+    T_HEAT["<b>③ TRANSPORT THERMIQUE</b><br/><code>PROSE_update_heat_transport()</code><br/><code>PROSE_ttc_one_species_sparse()</code><br/>→ Résoudre T(x, t+dt)"]
+    T_HEAT --> T_PRINT_T["Imprimer T(x,t)"]
+    T_PRINT_T --> T_UPDATE_RIVE_T["Transférer T → RIVE<br/><i>tempe_value = T - T₀</i>"]
+    T_UPDATE_RIVE_T --> T_CHK_TTC
+
+    T_CHK_TTC{"TTC + RIVE ?"}
+    T_CHK_TTC -->|Oui| T_TTC
+    T_CHK_TTC -->|Non| T_CHK_RIVE2
+
+    T_TTC["<b>④ TRANSPORT DES ESPÈCES</b><br/><i>∀ np ∈ [0, N_particules[</i><br/><code>PROSE_ttc_all_species()</code><br/>→ Advection-dispersion<br/>   de chaque espèce :<br/>   PHY, ZOO, BACT, O₂, NH₄,<br/>   NO₃, PO₄, MOD, etc.<br/><code>PROSE_update_phy_ctot()</code>"]
+    T_TTC --> T_MB_CHK{"MB_BIO ?"}
+    T_MB_CHK -->|Oui| T_MB["Bilan de masse transport<br/><code>PROSE_calc_mb_all_species()</code>"]
+    T_MB_CHK -->|Non| T_CHK_RIVE2
+    T_MB --> T_CHK_RIVE2
+
+    T_CHK_RIVE2{"RIVE ?"}
+    T_CHK_RIVE2 -->|Oui| T_RIVE
+    T_CHK_RIVE2 -->|Non| T_OUTPUTS
+
+    T_RIVE["<b>⑤ BIOGÉOCHIMIE RIVE</b><br/><i>∀ np ∈ [0, N_particules[</i><br/>• Maj concentrations ← TTC<br/>• Lier hydro ↔ rive<br/>• Calculer volumes eau<br/>• Interface eau/sédiment<br/><code>PROSE_all_sections()</code><br/>→ Cinétiques par section :<br/>   croissance/mortalité micro-org.<br/>   minéralisation MO<br/>   nitrification/dénitrification<br/>   production/respiration O₂<br/>   érosion/sédimentation"]
+
+    T_RIVE --> T_MB_BIO{"MB_BIO ?"}
+    T_MB_BIO -->|Oui| T_MB2["Bilan masse bio sections<br/>+ impression"]
+    T_MB_BIO -->|Non| T_OUTPUTS
+    T_MB2 --> T_OUTPUTS
+
+    T_OUTPUTS["<b>⑥ SORTIES</b><br/><code>PROSE_print_outputs_bio()</code><br/>Concentrations, hydro, T°"]
+    T_OUTPUTS --> T_WHILE
+
+    style T_START fill:#0a3d62,color:#fff
+    style T_FIN fill:#2d3436,color:#fff
+    style T_HYD fill:#74b9ff,stroke:#0984e3
+    style T_SEB fill:#ffeaa7,stroke:#f39c12
+    style T_HEAT fill:#fdcb6e,stroke:#f39c12
+    style T_TTC fill:#a29bfe,stroke:#6c5ce7
+    style T_RIVE fill:#55efc4,stroke:#00b894
+    style T_OUTPUTS fill:#b2bec3,stroke:#636e72
+</pre>
+</div>
+
+<!-- ============================================================ -->
+<h2>4. Logigramme — Mode Assimilation de Données (<code>DA=YES</code>)</h2>
+<!-- ============================================================ -->
+
+<p>L'assimilation intervient <b>après</b> les étapes ④-⑤ (transport + RIVE) dans la boucle temporelle transitoire. Deux méthodes sont disponibles.</p>
+
+<div class="diagram-container">
+<pre class="mermaid">
+flowchart TD
+    DA_START(["Après RIVE — DA activé"]) --> DA_METHOD{{"Méthode ?"}}
+
+    DA_METHOD -->|"<b>PF</b><br/>Filtre Particulaire"| PF_START
+    DA_METHOD -->|"<b>EnKF</b><br/>Ensemble Kalman"| ENKF_START
+
+    subgraph PF["FILTRE PARTICULAIRE (PF_PROSE)"]
+        PF_START{"t = t_DA ?<br/><i>pas d'assimilation</i>"}
+        PF_START -->|Non| PF_NO_OBS["Pas d'observation<br/>→ Imprimer poids, params, conc.<br/>→ <code>weights_prev = weights</code>"]
+        PF_START -->|Oui| PF_DIFF["<b>Comparer obs vs simul</b><br/><code>Prose_calc_difference_obs_simul()</code><br/>→ O₂ mesuré vs O₂ simulé<br/>par particule"]
+        PF_DIFF --> PF_OBS_CHK{"Observations<br/>disponibles ?"}
+        PF_OBS_CHK -->|Non| PF_NO_OBS
+        PF_OBS_CHK -->|Oui| PF_WEIGHTS["<b>Calculer poids</b><br/><code>Prose_calc_weight_all_particules()</code><br/>vraisemblance ∝ exp(-½ (obs-sim)²/σ²)"]
+        PF_WEIGHTS --> PF_NORM["<b>Normaliser poids + Neff</b><br/><code>Prose_calc_normalized_weights()</code><br/>Neff = 1 / Σwᵢ²"]
+        PF_NORM --> PF_PRINT["Imprimer :<br/>• Poids par particule<br/>• Paramètres extraits<br/>• Concentrations<br/>• Bilans de masse"]
+        PF_PRINT --> PF_RESAMPLE{"Neff < α·N ?<br/><i>dégénérescence ?</i>"}
+        PF_RESAMPLE -->|Oui| PF_DO_RESAMPLE["<b>Rééchantillonner</b><br/><code>Prose_fill_re_sample_elim_dupli()</code><br/><code>Prose_resample_particules()</code><br/>→ Dupliquer les « bonnes »<br/>→ Éliminer les « mauvaises »"]
+        PF_DO_RESAMPLE --> PF_REINIT["Réinitialiser poids<br/><code>wᵢ = 1/N</code>"]
+        PF_REINIT --> PF_PERTURB["<b>Perturber paramètres</b><br/><code>Prose_perturbation_parameters()</code><br/>→ Marche aléatoire sur :<br/>  rm_phy, α_phy, Pmax,<br/>  η_chla, μ_bact, Y_bact,<br/>  mort_bact, Kreaeration, B1_river"]
+        PF_PERTURB --> PF_NEW_W["Recalculer poids post-perturbation"]
+        PF_RESAMPLE -->|Non| PF_RESET
+        PF_NEW_W --> PF_RESET["<code>PROSE_reset_no_answer_obs()</code>"]
+    end
+
+    subgraph ENKF["ENSEMBLE KALMAN FILTER (ENKF_PROSE)"]
+        ENKF_START["<b>EnKF</b><br/><code>Prose_processus_enkf()</code><br/>→ Mise à jour de l'ensemble<br/>   par correction Kalman :<br/>   x_a = x_f + K·(y_obs - H·x_f)<br/>   K = P_f·Hᵀ·(H·P_f·Hᵀ + R)⁻¹"]
+    end
+
+    PF_NO_OBS --> DA_END
+    PF_RESET --> DA_END
+    ENKF_START --> DA_END
+
+    DA_END(["Retour boucle temporelle"])
+
+    style DA_START fill:#e17055,color:#fff
+    style DA_END fill:#2d3436,color:#fff
+    style PF fill:#ffecd2,stroke:#e17055
+    style ENKF fill:#ffecd2,stroke:#e17055
+    style PF_WEIGHTS fill:#fab1a0,stroke:#e17055
+    style PF_DO_RESAMPLE fill:#ff7675,stroke:#d63031,color:#fff
+    style PF_PERTURB fill:#fdcb6e,stroke:#f39c12
+    style ENKF_START fill:#fab1a0,stroke:#e17055
+</pre>
+</div>
+
+<h3>Paramètres assimilés (13 max)</h3>
+<table>
+<tr><th>#</th><th>Paramètre</th><th>Symbole</th><th>Module cible</th></tr>
+<tr><td>0</td><td>Maintenance respiration PHY</td><td>rm_phy</td><td>RIVE</td></tr>
+<tr><td>1</td><td>Coefficient α PHY</td><td>α_phy</td><td>RIVE</td></tr>
+<tr><td>2</td><td>Taux max photosynthèse</td><td>Pmax</td><td>RIVE</td></tr>
+<tr><td>3</td><td>Ratio Chla/C PHY (η)</td><td>η_chla</td><td>RIVE</td></tr>
+<tr><td>4</td><td>Concentration Chla PHY</td><td>C_chla</td><td>RIVE</td></tr>
+<tr><td>5</td><td>Coeff extinction lumière eau</td><td>η_water</td><td>RIVE</td></tr>
+<tr><td>6</td><td>T° optimale PHY</td><td>Topt_phy</td><td>RIVE</td></tr>
+<tr><td>7</td><td>Taux max croissance BACT</td><td>μmax_bact</td><td>RIVE</td></tr>
+<tr><td>8</td><td>Rendement BACT</td><td>Y_bact</td><td>RIVE</td></tr>
+<tr><td>9</td><td>Mortalité BACT</td><td>mort_bact</td><td>RIVE</td></tr>
+<tr><td>10</td><td>T° optimale BACT</td><td>Topt_bact</td><td>RIVE</td></tr>
+<tr><td>11</td><td>Coeff réaération navigation</td><td>K_navig</td><td>TTC</td></tr>
+<tr><td>12</td><td>Dégradabilité MO rivière (B1)</td><td>B1_river</td><td>RIVE</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2>5. Carte des entrées / sorties</h2>
+<!-- ============================================================ -->
+
+<div class="diagram-container">
+<pre class="mermaid">
+graph LR
+    subgraph IN["ENTRÉES"]
+        direction TB
+        I1["📄 Fichier de commande<br/><i>structure du réseau, biefs,<br/>singularités, apports, params</i>"]
+        I2["📄 Séries temporelles CL<br/><i>Q(t), Z(t), C(t) aux limites</i>"]
+        I3["📄 Données SAFRAN<br/><i>T_air, humidité, vent,<br/>rayonnement, précipitations</i>"]
+        I4["📄 Observations O₂ HF<br/><i>pour assimilation uniquement</i>"]
+        I5["📄 État initial / reprise<br/><i>concentrations, T° initiales</i>"]
+    end
+
+    subgraph PROSE["PROSE-PA"]
+        P1(("Simulation"))
+    end
+
+    subgraph OUT["SORTIES"]
+        direction TB
+        O1["💧 Hydraulique<br/><i>Q(x,t), H(x,t), V(x,t)<br/>par bief et par PK</i>"]
+        O2["🧬 Biogéochimie<br/><i>C(x,t) pour 20+ variables :<br/>PHY, ZOO, BACT, O₂, NH₄,<br/>NO₃, PO₄, MOD, MOP, etc.</i>"]
+        O3["🌡️ Température<br/><i>T(x,t) + flux SEB détaillés</i>"]
+        O4["⚖️ Bilans de masse<br/><i>par espèce, par section,<br/>par domaine, par couche<br/>(eau / vase / périphyton)</i>"]
+        O5["📊 Assimilation<br/><i>poids particules w(t)<br/>paramètres estimés θ(t)<br/>Neff(t), taille rééchantillon.</i>"]
+        O6["🚢 Tubes de courant<br/><i>maillage, hydro navigation</i>"]
+        O7["📋 Debug / Log<br/><i>traces complètes d'exécution</i>"]
+    end
+
+    I1 --> P1
+    I2 --> P1
+    I3 --> P1
+    I4 --> P1
+    I5 --> P1
+    P1 --> O1
+    P1 --> O2
+    P1 --> O3
+    P1 --> O4
+    P1 --> O5
+    P1 --> O6
+    P1 --> O7
+
+    style IN fill:#e3f2fd,stroke:#64b5f6
+    style OUT fill:#e8f5e9,stroke:#66bb6a
+    style PROSE fill:#ffeaa7,stroke:#fdcb6e
+</pre>
+</div>
+
+<!-- ============================================================ -->
+<h2>6. Espèces simulées par le modèle RIVE</h2>
+<!-- ============================================================ -->
+
+<div class="diagram-container">
+<pre class="mermaid">
+graph TD
+    subgraph PART["PARTICULAIRES (7)"]
+        PHY["🌿 PHY<br/>Phytoplancton<br/><i>+ annexes : PHYF, PHYS, PHYR</i>"]
+        ZOO["🦠 ZOO<br/>Zooplancton"]
+        BACT["🔬 BACT<br/>Bactéries hétérotrophes"]
+        BACTN["🔬 BACTN<br/>Bactéries nitrifiantes"]
+        BIF["🪸 BIF<br/>Biofilm / périphyton"]
+        MES["�ite MES<br/>Matières en suspension"]
+        MOP["🟤 MOP<br/>Matière organique<br/>particulaire"]
+    end
+
+    subgraph DISS["DISSOUS (13)"]
+        MOD["MOD<br/>MO dissoute"]
+        SODA["SODA<br/>MO dissoute annexe"]
+        SID["Si_D<br/>Silice dissoute"]
+        NH4["NH₄⁺"]
+        NO2["NO₂⁻"]
+        NO3["NO₃⁻"]
+        PO4["PO₄³⁻"]
+        TA_["TA<br/>Alcalinité totale"]
+        DIC_["DIC<br/>Carbone inorg. dissous"]
+        PH_["pH"]
+        O2_["O₂ dissous"]
+        N2O_["N₂O"]
+        CO2_["CO₂"]
+    end
+
+    subgraph LAYERS["3 COUCHES"]
+        W["💧 Colonne d'eau<br/>(WATER)"]
+        V["🟫 Vase / sédiments<br/>(VASE)"]
+        P["🪨 Périphyton<br/>(PERIPHYTON)"]
+    end
+
+    W --- PART
+    W --- DISS
+    V --- MOP
+    V --- BACT
+    P --- BIF
+
+    style PART fill:#e8f5e9,stroke:#66bb6a
+    style DISS fill:#e3f2fd,stroke:#64b5f6
+    style LAYERS fill:#ffeaa7,stroke:#fdcb6e
+</pre>
+</div>
+
+<p style="margin-top:2rem; font-size:0.82rem; color:#636e72; text-align:center;">
+    ProSe-PA v0.78 — Diagrammes générés à partir de l'analyse du code source (main_PROSE.c, input.y, param_PROSE.h, struct_simul_PROSE.h)
+</p>
+
+<script>mermaid.initialize({startOnLoad:true, theme:'neutral', flowchart:{useMaxWidth:true, htmlLabels:true}});</script>
+</body>
+</html>
