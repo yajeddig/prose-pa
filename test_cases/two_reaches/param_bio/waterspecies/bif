@@ -1,0 +1,67 @@
+BIF                                                ! Species keyword
+
+afc =                                              ! Subspecies name, SPECIES_NUM = 1
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 0.02
+
+    ! Living species properties
+    Topt  = [°C] 25. 
+    sigma = [°C] 20. 
+	
+    ! Biochemical composition
+    C/ P =  [mgC/mgP] 40.  
+    C/ N =  [mgC/mgN] 7.
+
+    ! Biogeochemical processes
+    mortality = { 
+        mort      = [/h] 0.0225
+        kd        = [/m] 5
+        kp        = [l/mg/m] 0.0
+        alpha_bif = [m^2/J] 0.009
+        m_bif     = [-] 0.186
+        c_ref     = [mgc/l] 0.00000075
+    }
+}
+
+ffc =                                              ! Subspecies name, SPECIES_NUM = 2
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 0.0
+
+    ! Living species properties
+    Topt  = [°C] 25. 
+    sigma = [°C] 20. 
+	
+    ! Biochemical composition
+    C/ P =  [mgC/mgP] 40.  
+    C/ N =  [mgC/mgN] 7.
+
+    ! Biogeochemical processes
+    mortality = { 
+        mort      = [/h] 0.045
+        kd        = [/m] 5
+        kp        = [l/mg/m] 0.0
+        alpha_bif = [m^2/J] 0.009
+        m_bif     = [-] 0.186
+        c_ref     = [mgc/l] 0.00000075
+    }
+}

@@ -1,0 +1,30 @@
+! Exp. file vaselayer
+VASE                      ! LAYER TYPE (VASE)
+vase1_s1 = {              ! LAYER_NAME = { ... }
+    porosity = 0.9
+    volume_layer = [m^3] 0 0.
+    initial_concentrations = {
+        ! SPECIES SPECIES_NUM = [UNIT]  CONC_INIT
+        bact 1 = [mmol/m^3]  0 0.
+        bactn 1 = [mmol/m^3]  0 0.
+        bactn 1 = [mmol/m^3]  0 0.
+        bif 1 = [mmol/m^3]  0 0.
+        bif 2 = [mmol/m^3]  0 0.
+        phy 1 = [mmol/m^3]  0 0.
+        zoo 1 = [mmol/m^3]  0 0.
+        zoo 2 = [mmol/m^3]  0 0.
+        nh4 1 = [mmol/m^3]  0 0.
+        no2 1 = [mmol/m^3]  0 0.
+        no3 1 = [mmol/m^3]  0 0.
+	mes 1 = [mg/l]  0 0.		   
+	mod 1 = [mmol/m^3] 0 0.
+	mod 2 = [mmol/m^3] 0 0.
+	mod 3 = [mmol/m^3] 0 0. 
+	mop 1 = [mmol/m^3] 0 0.
+        mop 2 = [mmol/m^3] 0 0.
+        mop 3 = [mmol/m^3] 0 0.
+        po4 1 = [mmol/m^3] 0 0.
+        si_d 1 = [mmol/m^3] 0 0.	   
+	o2 1 = [mmol/m^3]  0 0.
+    }							   
+}

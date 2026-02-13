@@ -11,7 +11,7 @@
     Software developed at the Centre for geosciences and geoengineering, Mines Paris/ARMINES, PSL University, Fontainebleau, France.
     <br />
     <br />
-    <a href="https://gitlab.com/prose-pa/prose-pa-/blob/main/notice/notice_CRIVE_aout2012.pdf"><strong>Explore the user guide »</strong></a>
+    <a href="https://gitlab.com/prose-pa/prose-pa/-/blob/SW/2024_ProSe_PA_User_Guide.pdf"><strong>Explore the user guide »</strong></a>
     <br />    <br />
     <strong>Contributors</strong>
     <br />

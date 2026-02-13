@@ -1,0 +1,81 @@
+ZOO
+
+zor =                                          ! Subspecies name, SPECIES_NUM = 1
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 0.02
+
+    ! Living species properties
+    Topt  = [°C] 25.
+    sigma = [°C] 10.
+
+    ! Monod-Michaelis-Menten kinetics
+    kmich phy = 0.1
+
+    ! Biochemical composition
+    C/ P    = [mgC/mgP] 40.
+    C/ N    = [mgC/mgN] 7.
+    dbo = [molO2/molC] 1.
+
+    ! Biogeochemical processes
+    growth = {
+        mumax      = [/h] 0.025
+        phi_lim_gr = [mgC/l] 0.1
+	}
+    respiration = { }
+    mortality   = {
+        mort = [/h] 0.007
+    }
+    grazing = {
+        graz = [/h] 0.1 
+    }
+}
+
+zoc =                                          ! Subspecies name, SPECIES_NUM = 2
+{
+    ! Advection-diffusion properties
+    transport_type = SOLUTE
+    media_type     = FREE_WATER
+    advection      = yes
+    diffusion      = no
+    diff_mol       = [m^2/s] 0.
+    
+    ! Particulate properties
+    rho  = [g/cm^3] 1.2
+    phi  = 0.9
+    vsed = [m/h] 0.02
+
+    ! Living species properties
+    Topt  = [°C] 25.
+    sigma = [°C] 10.
+
+    ! Monod-Michaelis-Menten kinetics
+    kmich phy = 0.1
+
+    ! Biochemical composition
+    C/ P    = [mgC/mgP] 40.
+    C/ N    = [mgC/mgN] 7.
+    dbo = [molO2/molC] 1.
+
+    ! Biogeochemical processes
+    growth = {
+        mumax      = [/h] 0.015
+        phi_lim_gr = [mgC/l] 0.1
+	}
+    respiration = { }
+    mortality   = {
+        mort = [/h] 0.007
+    }
+    grazing = {
+        graz = [/h] 0.05 
+    }
+}

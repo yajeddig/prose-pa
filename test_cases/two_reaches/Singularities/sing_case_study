@@ -1,0 +1,12 @@
+upstream_point;
+middle_point;
+downstream_point {
+	type = WATER_LEVEL
+	holler = 0.21
+ 	#RN=7.98 + 0.37 = 8.35
+	pk = [km] 100. 
+	z(t) = { [d] [m] 
+		0.0 9.
+	}
+
+};
